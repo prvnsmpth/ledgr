@@ -1,10 +1,14 @@
-# ledgr
+<div align="center">
+  <img src="static/ledgr-favicon-2.png" width="100" height="120">
+  <h1>ledgr</h1>
+  <p>A privacy-first personal finance manager</p>
+  <div>
+    <a href="https://ledgr.money" target="_blank">ledgr.money</a> |
+    <a href="https://demo.ledgr.money" target="_blank">demo.ledgr.money</a>
+  </div>
+</div>
 
-A privacy-first personal finance manager. See: [ledgr.money](https://ledgr.money).
-
-Try the [demo site](https://demo.ledgr.money).
-
-## What is it?
+## What is ledgr?
 
 **ledgr** is a personal finance manager where your data is kept on-device and not sent to any servers for storage or analysis. It allows users to import their bank statements and transactions into the app, categorize expenses and stay on top of their spending.
 
