@@ -103,14 +103,16 @@ export type LedgrMetadata = {
     lastSync: number
 }
 
-export class TransactionDB {
+export class LedgrDB {
     private readonly DB_NAME = 'transaction_db'
 
+    // Stores transaction data
     private readonly TXN_STORE = 'transactions'
     private readonly TXN_UNIQ_INDEX = 'txn_index'
     private readonly TXN_ACCNT_INDX = 'txn_account_index'
     private readonly TXN_DATE_INDEX = 'txn_date_index'
 
+    // Stores account data (an account represents a source of transaction data - could be a bank account, credit card, etc.)
     private readonly ACCOUNT_STORE = 'accounts'
     private readonly ACCOUNT_UNIQ_INDEX = 'account_index'
     private readonly ACCOUNT_NAME_INDEX = 'account_name_index'
@@ -118,6 +120,9 @@ export class TransactionDB {
     private readonly METADATA_STORE = 'metadata'
 
     private readonly TXN_STATS_STORE = 'txn_stats'
+
+    // Stores expense categories, allowing the user to add/remove categories as they please
+    private readonly EXPENSE_CATEGORY_STORE = 'expense_categories'
 
     private db: IDBDatabase | undefined
 
@@ -153,6 +158,10 @@ export class TransactionDB {
 
                 if (!db.objectStoreNames.contains(this.METADATA_STORE)) {
                     db.createObjectStore(this.METADATA_STORE, { autoIncrement: true })
+                }
+
+                if (!db.objectStoreNames.contains(this.EXPENSE_CATEGORY_STORE)) {
+                    db.createObjectStore(this.EXPENSE_CATEGORY_STORE, { autoIncrement: true })
                 }
             }
         })

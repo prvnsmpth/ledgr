@@ -66,7 +66,7 @@
     </p>
 </div>
 <div class="flex flex-col gap-1.5">
-    <Label class="text-xs text-muted-foreground uppercase font-bold">Account Type</Label>
+    <Label class="text-xs text-muted-foreground uppercase font-bold">Statement Type</Label>
     <RadioGroup.Root class="col-span-3 flex gap-4" bind:value={accountType}>
         <div class="flex items-center gap-1">
             <RadioGroup.Item id="bank" value={AccountType.Bank} />

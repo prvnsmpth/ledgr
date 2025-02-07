@@ -5,7 +5,7 @@ import {
     ExpenseCategory,
     StoreError,
     SupportedBank,
-    TransactionDB,
+    LedgrDB,
     type Account,
     type CashFlow,
     type GroupedTransactions,
@@ -53,11 +53,11 @@ function groupTransactionsByMonth(txns: Transaction[]): GroupedTransactions[] {
 }
 
 export class Store {
-    private db: TransactionDB
+    private db: LedgrDB
     private worker: Worker
 
     constructor() {
-        this.db = new TransactionDB()
+        this.db = new LedgrDB()
         this.worker = new Worker(new URL('./db.worker.ts', import.meta.url), { type: 'module' })
     }
 

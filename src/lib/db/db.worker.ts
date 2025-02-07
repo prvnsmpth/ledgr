@@ -6,14 +6,14 @@ import {
     AccountType,
     ExpenseCategory,
     SupportedBank,
-    TransactionDB,
+    LedgrDB,
     TransactionType,
     type CashFlow,
     type CashFlowStats,
     type Transaction
 } from './index'
 
-const db = new TransactionDB()
+const db = new LedgrDB()
 
 // Categories to exclude from cash flow calculations
 const excludedCategories = [

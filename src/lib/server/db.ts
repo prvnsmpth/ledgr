@@ -4,6 +4,7 @@ import { ulid } from 'ulid'
 import { OAuth2Client } from 'google-auth-library'
 import { env as privateEnv } from '$env/dynamic/private'
 import { PUBLIC_GOOGLE_CLIENT_ID, PUBLIC_GOOGLE_REDIRECT_URI } from '$env/static/public'
+import fs from 'fs'
 
 const CLIENT_ID = PUBLIC_GOOGLE_CLIENT_ID
 const CLIENT_SECRET = privateEnv.GOOGLE_CLIENT_SECRET
@@ -14,6 +15,7 @@ export class UserService {
     private db: sqlite3.Database
 
     constructor() {
+        fs.mkdirSync('ledgr_data', { recursive: true })
         this.db = new sqlite3.Database('ledgr_data/ledgr.db')
 
         this.db.serialize(() => {
