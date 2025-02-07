@@ -1,8 +1,13 @@
 import adapter from '@sveltejs/adapter-node';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { config as dotenvConfig } from 'dotenv'
+import fs from 'fs'
 
 const envFile = process.env.NODE_ENV === "production" ? ".env.prod" : ".env"
+if (!fs.existsSync(envFile)) {
+    throw new Error(`Missing ${envFile} file. Please create one (refer to .env.template).`)
+}
+
 dotenvConfig({ path: envFile })
 
 /** @type {import('@sveltejs/kit').Config} */

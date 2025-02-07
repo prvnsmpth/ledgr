@@ -1,6 +1,8 @@
 # ledgr
 
-A privacy-first personal finance manager. Try the [demo site](https://demo.ledgr.money).
+A privacy-first personal finance manager. See: [ledgr.money](https://ledgr.money).
+
+Try the [demo site](https://demo.ledgr.money).
 
 ## What is it?
 
@@ -16,4 +18,28 @@ See the [Privacy Policy](https://ledgr.money/privacy-policy) for more details.
 
 ## Contributing
 
-You can contribute to **ledgr** by submitting a pull request. Please see the [Contributing Guide](CONTRIBUTING.md) for more details.
+Pull requests and contributions to **ledgr** are welcome!
+
+### Setup for development
+
+1. Clone the repository
+```bash
+git clone https://github.com/ledgr-money/ledgr.git
+```
+
+2. Install dependencies
+```bash
+npm install
+```
+
+3. Setup env variables
+```bash
+cp .env.template .env
+
+# Update .env and set appropriate values
+```
+
+4. Start the development server
+```bash
+npm run dev
+```

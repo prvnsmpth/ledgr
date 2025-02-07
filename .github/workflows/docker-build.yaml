@@ -40,6 +40,11 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ env.BUILD_ENV }}
+      - name: Create env file
+        run: |
+          echo "PUBLIC_APP_HOST=${{ secrets.PUBLIC_APP_HOST }}" >> .env.prod
+          echo "PUBLIC_GOOGLE_CLIENT_ID=${{ secrets.PUBLIC_GOOGLE_CLIENT_ID }}" >> .env.prod
+          echo "PUBLIC_GOOGLE_REDIRECT_URI=${{ secrets.PUBLIC_GOOGLE_REDIRECT_URI }}" >> .env.prod
       - name: Docker Build and Push
         uses: docker/build-push-action@v5
         with:

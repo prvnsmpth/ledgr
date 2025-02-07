@@ -3,12 +3,13 @@ import { OAuth2Client } from 'google-auth-library'
 import { type User } from '$lib/server/types'
 import { userService } from '$lib/server/db'
 import { ulid } from 'ulid'
+import { PUBLIC_GOOGLE_CLIENT_ID, PUBLIC_GOOGLE_REDIRECT_URI } from '$env/static/public'
 import { env } from '$env/dynamic/private'
 
 async function verifyIdToken(idToken: string): Promise<User> {
-    const CLIENT_ID = env.PUBLIC_GOOGLE_CLIENT_ID
+    const CLIENT_ID = PUBLIC_GOOGLE_CLIENT_ID
     const CLIENT_SECRET = env.GOOGLE_CLIENT_SECRET
-    const REDIRECT_URI = env.PUBLIC_GOOGLE_REDIRECT_URI
+    const REDIRECT_URI = PUBLIC_GOOGLE_REDIRECT_URI
 
     const oauth2Client = new OAuth2Client({
         clientId: CLIENT_ID,

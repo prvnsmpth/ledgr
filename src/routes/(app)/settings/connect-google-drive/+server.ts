@@ -1,9 +1,7 @@
 import { oauth2Service, sessionService, userService } from '$lib/server/db';
 import { redirect, type RequestHandler } from '@sveltejs/kit';
 import { ulid } from 'ulid';
-import { PUBLIC_GOOGLE_CLIENT_ID } from '$env/static/public'
-
-const CLIENT_ID = PUBLIC_GOOGLE_CLIENT_ID
+import { PUBLIC_GOOGLE_CLIENT_ID } from '$env/static/public';
 
 // Called by Google after successful auth
 export const GET: RequestHandler = async ({ request, url, cookies }) => {
@@ -23,7 +21,7 @@ export const GET: RequestHandler = async ({ request, url, cookies }) => {
     }
     const ticket = await oauth2Client.verifyIdToken({
         idToken: tokens.id_token,
-        audience: CLIENT_ID
+        audience: PUBLIC_GOOGLE_CLIENT_ID
     })
     const payload = ticket.getPayload()
     if (!payload) {

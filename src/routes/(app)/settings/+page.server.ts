@@ -4,6 +4,7 @@ import type { LedgrData } from "$lib/server/types"
 import { type RequestEvent, fail, redirect } from "@sveltejs/kit"
 import { OAuth2Client } from "google-auth-library"
 import type { PageServerLoad } from "./$types"
+import { PUBLIC_GOOGLE_CLIENT_ID, PUBLIC_GOOGLE_REDIRECT_URI } from "$env/static/public"
 import { env } from '$env/dynamic/private'
 
 export const load: PageServerLoad = async ({ cookies }: RequestEvent) => {
@@ -32,9 +33,9 @@ export const load: PageServerLoad = async ({ cookies }: RequestEvent) => {
 
 export const actions = {
     connectGoogleDrive: async ({ cookies }: RequestEvent) => {
-        const CLIENT_ID = env.PUBLIC_GOOGLE_CLIENT_ID
+        const CLIENT_ID = PUBLIC_GOOGLE_CLIENT_ID
         const CLIENT_SECRET = env.GOOGLE_CLIENT_SECRET
-        const REDIRECT_URI = env.PUBLIC_GOOGLE_REDIRECT_URI
+        const REDIRECT_URI = PUBLIC_GOOGLE_REDIRECT_URI
 
         const oauth2Client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
         const url = oauth2Client.generateAuthUrl({

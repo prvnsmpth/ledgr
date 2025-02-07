@@ -2,6 +2,7 @@ import sqlite3 from 'sqlite3'
 import type { Session, User } from './types'
 import { ulid } from 'ulid'
 import { OAuth2Client } from 'google-auth-library'
+import { PUBLIC_GOOGLE_CLIENT_ID, PUBLIC_GOOGLE_REDIRECT_URI } from '$env/static/public'
 import { env } from '$env/dynamic/private'
 import fs from 'fs'
 
@@ -229,9 +230,9 @@ export class OAuth2Service {
     private lruList: string[]
     private userService: UserService
 
-    private CLIENT_ID = env.PUBLIC_GOOGLE_CLIENT_ID
+    private CLIENT_ID = PUBLIC_GOOGLE_CLIENT_ID
     private CLIENT_SECRET = env.GOOGLE_CLIENT_SECRET
-    private REDIRECT_URI = env.PUBLIC_GOOGLE_REDIRECT_URI
+    private REDIRECT_URI = PUBLIC_GOOGLE_REDIRECT_URI
 
     constructor(userService: UserService) {
         this.userService = userService

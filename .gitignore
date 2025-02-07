@@ -12,6 +12,7 @@ Thumbs.db
 
 # Env
 .env
+.env.prod
 !.env.example
 !.env.test
 
