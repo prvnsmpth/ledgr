@@ -1,0 +1,453 @@
+{
+    "transactions": [
+        {
+            "id": "709d9655",
+            "accountId": 1,
+            "date": "2024-08-19T18:30:00.000Z",
+            "description": "POS-Flipkart Electronics",
+            "amount": 20000,
+            "txnType": "debit",
+            "expenseCategory": "shopping"
+        },
+        {
+            "id": "4d9cccb6",
+            "accountId": 1,
+            "date": "2024-08-14T18:30:00.000Z",
+            "description": "NEFT-Salary Credit",
+            "amount": 120000,
+            "txnType": "credit",
+            "expenseCategory": "untagged"
+        },
+        {
+            "id": "2526e7bf",
+            "accountId": 1,
+            "date": "2024-08-09T18:30:00.000Z",
+            "description": "UPI-Netflix Subscription",
+            "amount": 499,
+            "txnType": "debit",
+            "expenseCategory": "netflix"
+        },
+        {
+            "id": "5fa1324d",
+            "accountId": 1,
+            "date": "2024-08-04T18:30:00.000Z",
+            "description": "POS-Decathlon Gear",
+            "amount": 8900,
+            "txnType": "debit",
+            "expenseCategory": "health"
+        },
+        {
+            "id": "adac599f",
+            "accountId": 1,
+            "date": "2024-07-31T18:30:00.000Z",
+            "description": "IMPS-Rent August",
+            "amount": 55000,
+            "txnType": "debit",
+            "expenseCategory": "rent"
+        },
+        {
+            "id": "41f09701",
+            "accountId": 1,
+            "date": "2024-07-29T18:30:00.000Z",
+            "description": "POS-Lifestyle Shopping",
+            "amount": 12000,
+            "txnType": "debit",
+            "expenseCategory": "shopping"
+        },
+        {
+            "id": "5c8725cd",
+            "accountId": 1,
+            "date": "2024-07-24T18:30:00.000Z",
+            "description": "UPI-Zomato Dinner",
+            "amount": 850,
+            "txnType": "debit",
+            "expenseCategory": "dining"
+        },
+        {
+            "id": "11a38ad4",
+            "accountId": 1,
+            "date": "2024-07-19T18:30:00.000Z",
+            "description": "POS-Amazon Purchase",
+            "amount": 3000,
+            "txnType": "debit",
+            "expenseCategory": "shopping"
+        },
+        {
+            "id": "15abf197",
+            "accountId": 1,
+            "date": "2024-07-14T18:30:00.000Z",
+            "description": "NEFT-Salary Credit",
+            "amount": 120000,
+            "txnType": "credit",
+            "expenseCategory": "untagged"
+        },
+        {
+            "id": "4a125c1c",
+            "accountId": 1,
+            "date": "2024-07-09T18:30:00.000Z",
+            "description": "UPI-Uber Ride",
+            "amount": 250,
+            "txnType": "debit",
+            "expenseCategory": "transport"
+        },
+        {
+            "id": "876d09fd",
+            "accountId": 1,
+            "date": "2024-07-04T18:30:00.000Z",
+            "description": "POS-Big Bazaar Groceries",
+            "amount": 5000,
+            "txnType": "debit",
+            "expenseCategory": "groceries"
+        },
+        {
+            "id": "378b1eca",
+            "accountId": 1,
+            "date": "2024-06-30T18:30:00.000Z",
+            "description": "IMPS-Rent July",
+            "amount": 55000,
+            "txnType": "debit",
+            "expenseCategory": "rent"
+        },
+        {
+            "id": "a3d21263",
+            "accountId": 1,
+            "date": "2024-06-24T18:30:00.000Z",
+            "description": "UPI-Swiggy Lunch",
+            "amount": 800,
+            "txnType": "debit",
+            "expenseCategory": "swiggy"
+        },
+        {
+            "id": "ab23de1c",
+            "accountId": 1,
+            "date": "2024-06-19T18:30:00.000Z",
+            "description": "POS-Flipkart Shopping",
+            "amount": 9500,
+            "txnType": "debit",
+            "expenseCategory": "shopping"
+        },
+        {
+            "id": "ddbb1678",
+            "accountId": 1,
+            "date": "2024-06-14T18:30:00.000Z",
+            "description": "NEFT-Salary Credit",
+            "amount": 120000,
+            "txnType": "credit",
+            "expenseCategory": "untagged"
+        },
+        {
+            "id": "3ff8f27f",
+            "accountId": 1,
+            "date": "2024-06-11T18:30:00.000Z",
+            "description": "IMPS-Electricity Bill",
+            "amount": 2500,
+            "txnType": "debit",
+            "expenseCategory": "utilities"
+        },
+        {
+            "id": "26d9c901",
+            "accountId": 1,
+            "date": "2024-06-09T18:30:00.000Z",
+            "description": "UPI-Netflix Subscription",
+            "amount": 499,
+            "txnType": "debit",
+            "expenseCategory": "netflix"
+        },
+        {
+            "id": "62afd525",
+            "accountId": 1,
+            "date": "2024-06-02T18:30:00.000Z",
+            "description": "POS-Decathlon Sports",
+            "amount": 7000,
+            "txnType": "debit",
+            "expenseCategory": "health"
+        },
+        {
+            "id": "e2645602",
+            "accountId": 1,
+            "date": "2024-05-31T18:30:00.000Z",
+            "description": "IMPS-Rent June",
+            "amount": 55000,
+            "txnType": "debit",
+            "expenseCategory": "rent"
+        },
+        {
+            "id": "7334056a",
+            "accountId": 1,
+            "date": "2024-05-24T18:30:00.000Z",
+            "description": "UPI-Zomato Dinner",
+            "amount": 950,
+            "txnType": "debit",
+            "expenseCategory": "dining"
+        },
+        {
+            "id": "5926cfaf",
+            "accountId": 1,
+            "date": "2024-05-19T18:30:00.000Z",
+            "description": "POS-Amazon Purchase",
+            "amount": 1500,
+            "txnType": "debit",
+            "expenseCategory": "shopping"
+        },
+        {
+            "id": "a5ca3b59",
+            "accountId": 1,
+            "date": "2024-05-14T18:30:00.000Z",
+            "description": "NEFT-Salary Credit",
+            "amount": 120000,
+            "txnType": "credit",
+            "expenseCategory": "untagged"
+        },
+        {
+            "id": "9ea5fbf6",
+            "accountId": 1,
+            "date": "2024-05-07T18:30:00.000Z",
+            "description": "UPI-Uber Ride",
+            "amount": 300,
+            "txnType": "debit",
+            "expenseCategory": "transport"
+        },
+        {
+            "id": "2c984751",
+            "accountId": 1,
+            "date": "2024-05-04T18:30:00.000Z",
+            "description": "POS-Big Bazaar Groceries",
+            "amount": 4900,
+            "txnType": "debit",
+            "expenseCategory": "groceries"
+        },
+        {
+            "id": "4170f2bd",
+            "accountId": 1,
+            "date": "2024-04-30T18:30:00.000Z",
+            "description": "IMPS-Rent May",
+            "amount": 55000,
+            "txnType": "debit",
+            "expenseCategory": "rent"
+        },
+        {
+            "id": "0b638083",
+            "accountId": 1,
+            "date": "2024-04-29T18:30:00.000Z",
+            "description": "POS-PVR Movies",
+            "amount": 1500,
+            "txnType": "debit",
+            "expenseCategory": "entertainment"
+        },
+        {
+            "id": "a3f57a56",
+            "accountId": 1,
+            "date": "2024-04-24T18:30:00.000Z",
+            "description": "UPI-Swiggy Dinner",
+            "amount": 700,
+            "txnType": "debit",
+            "expenseCategory": "swiggy"
+        },
+        {
+            "id": "dd8054ad",
+            "accountId": 1,
+            "date": "2024-04-19T18:30:00.000Z",
+            "description": "POS-Flipkart Shopping",
+            "amount": 12000,
+            "txnType": "debit",
+            "expenseCategory": "shopping"
+        },
+        {
+            "id": "6dd9603a",
+            "accountId": 1,
+            "date": "2024-04-14T18:30:00.000Z",
+            "description": "NEFT-Salary Credit",
+            "amount": 120000,
+            "txnType": "credit",
+            "expenseCategory": "untagged"
+        },
+        {
+            "id": "a06b4421",
+            "accountId": 1,
+            "date": "2024-04-09T18:30:00.000Z",
+            "description": "UPI-Zomato Lunch",
+            "amount": 850,
+            "txnType": "debit",
+            "expenseCategory": "dining"
+        },
+        {
+            "id": "c0673031",
+            "accountId": 1,
+            "date": "2024-04-04T18:30:00.000Z",
+            "description": "POS-Big Bazaar Groceries",
+            "amount": 4800,
+            "txnType": "debit",
+            "expenseCategory": "groceries"
+        },
+        {
+            "id": "64e28ada",
+            "accountId": 1,
+            "date": "2024-03-31T18:30:00.000Z",
+            "description": "IMPS-Rent April",
+            "amount": 55000,
+            "txnType": "debit",
+            "expenseCategory": "rent"
+        },
+        {
+            "id": "c7384720",
+            "accountId": 1,
+            "date": "2024-03-27T18:30:00.000Z",
+            "description": "UPI-Netflix Subscription",
+            "amount": 499,
+            "txnType": "debit",
+            "expenseCategory": "netflix"
+        },
+        {
+            "id": "f707bdea",
+            "accountId": 1,
+            "date": "2024-03-19T18:30:00.000Z",
+            "description": "POS-Lifestyle Shopping",
+            "amount": 9000,
+            "txnType": "debit",
+            "expenseCategory": "shopping"
+        },
+        {
+            "id": "35e8851b",
+            "accountId": 1,
+            "date": "2024-03-14T18:30:00.000Z",
+            "description": "NEFT-Salary Credit",
+            "amount": 120000,
+            "txnType": "credit",
+            "expenseCategory": "untagged"
+        },
+        {
+            "id": "3eff7cd4",
+            "accountId": 1,
+            "date": "2024-03-09T18:30:00.000Z",
+            "description": "UPI-Swiggy Dinner",
+            "amount": 650,
+            "txnType": "debit",
+            "expenseCategory": "swiggy"
+        },
+        {
+            "id": "2a011cc1",
+            "accountId": 1,
+            "date": "2024-03-04T18:30:00.000Z",
+            "description": "POS-Decathlon Sports Gear",
+            "amount": 7200,
+            "txnType": "debit",
+            "expenseCategory": "health"
+        },
+        {
+            "id": "82728bb3",
+            "accountId": 1,
+            "date": "2024-02-29T18:30:00.000Z",
+            "description": "IMPS-Rent March",
+            "amount": 55000,
+            "txnType": "debit",
+            "expenseCategory": "rent"
+        },
+        {
+            "id": "8805e0f7",
+            "accountId": 1,
+            "date": "2024-02-22T18:30:00.000Z",
+            "description": "UPI-Ola Cab Ride",
+            "amount": 400,
+            "txnType": "debit",
+            "expenseCategory": "transport"
+        },
+        {
+            "id": "0c6e4951",
+            "accountId": 1,
+            "date": "2024-02-17T18:30:00.000Z",
+            "description": "POS-Amazon Purchase",
+            "amount": 2500,
+            "txnType": "debit",
+            "expenseCategory": "shopping"
+        },
+        {
+            "id": "fdf7a9fc",
+            "accountId": 1,
+            "date": "2024-02-14T18:30:00.000Z",
+            "description": "NEFT-Salary Credit",
+            "amount": 120000,
+            "txnType": "credit",
+            "expenseCategory": "untagged"
+        },
+        {
+            "id": "2e7a765f",
+            "accountId": 1,
+            "date": "2024-02-07T18:30:00.000Z",
+            "description": "POS-PVR Cinemas",
+            "amount": 1800,
+            "txnType": "debit",
+            "expenseCategory": "entertainment"
+        },
+        {
+            "id": "546ce750",
+            "accountId": 1,
+            "date": "2024-02-01T18:30:00.000Z",
+            "description": "IMPS-Utility Bill Payment",
+            "amount": 3500,
+            "txnType": "debit",
+            "expenseCategory": "utilities"
+        },
+        {
+            "id": "f44c4b6e",
+            "accountId": 1,
+            "date": "2024-01-24T18:30:00.000Z",
+            "description": "UPI-Swiggy Lunch",
+            "amount": 750,
+            "txnType": "debit",
+            "expenseCategory": "swiggy"
+        },
+        {
+            "id": "17e76825",
+            "accountId": 1,
+            "date": "2024-01-19T18:30:00.000Z",
+            "description": "POS-Flipkart Electronics",
+            "amount": 18000,
+            "txnType": "debit",
+            "expenseCategory": "shopping"
+        },
+        {
+            "id": "c606cedd",
+            "accountId": 1,
+            "date": "2024-01-14T18:30:00.000Z",
+            "description": "NEFT-Salary Credit",
+            "amount": 120000,
+            "txnType": "credit",
+            "expenseCategory": "untagged"
+        },
+        {
+            "id": "ef04e2fa",
+            "accountId": 1,
+            "date": "2024-01-09T18:30:00.000Z",
+            "description": "UPI-Zomato Dinner",
+            "amount": 900,
+            "txnType": "debit",
+            "expenseCategory": "dining"
+        },
+        {
+            "id": "7bd3ead1",
+            "accountId": 1,
+            "date": "2024-01-04T18:30:00.000Z",
+            "description": "POS-Big Bazaar Groceries",
+            "amount": 4500,
+            "txnType": "debit",
+            "expenseCategory": "groceries"
+        },
+        {
+            "id": "2d5791b5",
+            "accountId": 1,
+            "date": "2023-12-31T18:30:00.000Z",
+            "description": "IMPS-Rent January",
+            "amount": 55000,
+            "txnType": "debit",
+            "expenseCategory": "rent"
+        }
+    ],
+    "accounts": [
+        {
+            "name": "Salary",
+            "bank": "hdfc",
+            "type": "bank",
+            "id": 1
+        }
+    ]
+}

@@ -1,0 +1,226 @@
+<svg
+    id="visual"
+    viewBox="0 0 900 600"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="1.1"
+    ><g stroke-width="1" stroke-linejoin="bevel"
+        ><path d="M400 300L400 200L300 200Z" fill="#006c40" stroke="#006c40"></path><path
+            d="M300 200L300 300L400 300Z"
+            fill="#00101c"
+            stroke="#00101c"
+        ></path><path d="M400 200L300 100L300 200Z" fill="#0b7531" stroke="#0b7531"></path><path
+            d="M300 300L400 400L400 300Z"
+            fill="#006c40"
+            stroke="#006c40"
+        ></path><path d="M300 300L300 400L400 400Z" fill="#00101c" stroke="#00101c"></path><path
+            d="M400 400L500 300L400 300Z"
+            fill="#004349"
+            stroke="#004349"
+        ></path><path d="M400 300L500 300L400 200Z" fill="#003842" stroke="#003842"></path><path
+            d="M200 200L200 300L300 200Z"
+            fill="#012e39"
+            stroke="#012e39"
+        ></path><path d="M300 200L200 300L300 300Z" fill="#004e4e" stroke="#004e4e"></path><path
+            d="M300 300L200 300L300 400Z"
+            fill="#00101c"
+            stroke="#00101c"
+        ></path><path d="M300 100L200 200L300 200Z" fill="#032430" stroke="#032430"></path><path
+            d="M500 200L400 100L400 200Z"
+            fill="#004349"
+            stroke="#004349"
+        ></path><path d="M400 200L400 100L300 100Z" fill="#004349" stroke="#004349"></path><path
+            d="M500 300L500 200L400 200Z"
+            fill="#00584e"
+            stroke="#00584e"
+        ></path><path d="M300 100L200 100L200 200Z" fill="#004349" stroke="#004349"></path><path
+            d="M500 200L500 100L400 100Z"
+            fill="#004349"
+            stroke="#004349"
+        ></path><path d="M400 400L500 400L500 300Z" fill="#032430" stroke="#032430"></path><path
+            d="M200 300L200 400L300 400Z"
+            fill="#00584e"
+            stroke="#00584e"
+        ></path><path d="M600 300L600 200L500 300Z" fill="#004349" stroke="#004349"></path><path
+            d="M500 300L600 200L500 200Z"
+            fill="#006c40"
+            stroke="#006c40"
+        ></path><path d="M500 200L600 200L500 100Z" fill="#032430" stroke="#032430"></path><path
+            d="M200 400L300 500L300 400Z"
+            fill="#003842"
+            stroke="#003842"
+        ></path><path d="M300 400L300 500L400 400Z" fill="#012e39" stroke="#012e39"></path><path
+            d="M400 400L400 500L500 400Z"
+            fill="#00584e"
+            stroke="#00584e"
+        ></path><path d="M300 500L400 500L400 400Z" fill="#004e4e" stroke="#004e4e"></path><path
+            d="M400 100L300 0L300 100Z"
+            fill="#00584e"
+            stroke="#00584e"
+        ></path><path d="M300 100L300 0L200 100Z" fill="#006c40" stroke="#006c40"></path><path
+            d="M400 0L300 0L400 100Z"
+            fill="#004349"
+            stroke="#004349"
+        ></path><path d="M500 400L600 300L500 300Z" fill="#006349" stroke="#006349"></path><path
+            d="M500 100L400 0L400 100Z"
+            fill="#003842"
+            stroke="#003842"
+        ></path><path d="M200 200L100 300L200 300Z" fill="#00584e" stroke="#00584e"></path><path
+            d="M200 300L100 300L200 400Z"
+            fill="#00101c"
+            stroke="#00101c"
+        ></path><path d="M100 200L100 300L200 200Z" fill="#041a26" stroke="#041a26"></path><path
+            d="M200 100L100 200L200 200Z"
+            fill="#041a26"
+            stroke="#041a26"
+        ></path><path d="M200 400L200 500L300 500Z" fill="#0b7531" stroke="#0b7531"></path><path
+            d="M100 400L200 500L200 400Z"
+            fill="#041a26"
+            stroke="#041a26"
+        ></path><path d="M600 200L600 100L500 100Z" fill="#041a26" stroke="#041a26"></path><path
+            d="M500 100L500 0L400 0Z"
+            fill="#00584e"
+            stroke="#00584e"
+        ></path><path d="M500 500L600 400L500 400Z" fill="#004e4e" stroke="#004e4e"></path><path
+            d="M500 400L600 400L600 300Z"
+            fill="#004349"
+            stroke="#004349"
+        ></path><path d="M300 0L200 0L200 100Z" fill="#041a26" stroke="#041a26"></path><path
+            d="M200 100L100 100L100 200Z"
+            fill="#0b7531"
+            stroke="#0b7531"
+        ></path><path d="M100 300L100 400L200 400Z" fill="#012e39" stroke="#012e39"></path><path
+            d="M400 500L500 500L500 400Z"
+            fill="#006349"
+            stroke="#006349"
+        ></path><path d="M200 0L100 100L200 100Z" fill="#032430" stroke="#032430"></path><path
+            d="M600 100L500 0L500 100Z"
+            fill="#032430"
+            stroke="#032430"
+        ></path><path d="M200 500L300 600L300 500Z" fill="#004e4e" stroke="#004e4e"></path><path
+            d="M300 500L300 600L400 500Z"
+            fill="#00584e"
+            stroke="#00584e"
+        ></path><path d="M400 500L400 600L500 500Z" fill="#032430" stroke="#032430"></path><path
+            d="M500 600L600 500L500 500Z"
+            fill="#0b7531"
+            stroke="#0b7531"
+        ></path><path d="M500 500L600 500L600 400Z" fill="#004349" stroke="#004349"></path><path
+            d="M600 300L700 300L600 200Z"
+            fill="#032430"
+            stroke="#032430"
+        ></path><path d="M600 200L700 200L600 100Z" fill="#004e4e" stroke="#004e4e"></path><path
+            d="M600 400L700 300L600 300Z"
+            fill="#006c40"
+            stroke="#006c40"
+        ></path><path d="M700 400L700 300L600 400Z" fill="#003842" stroke="#003842"></path><path
+            d="M100 100L0 200L100 200Z"
+            fill="#004349"
+            stroke="#004349"
+        ></path><path d="M100 200L0 200L100 300Z" fill="#004e4e" stroke="#004e4e"></path><path
+            d="M100 300L0 300L100 400Z"
+            fill="#004349"
+            stroke="#004349"
+        ></path><path d="M200 0L100 0L100 100Z" fill="#012e39" stroke="#012e39"></path><path
+            d="M100 100L0 100L0 200Z"
+            fill="#041a26"
+            stroke="#041a26"
+        ></path><path d="M700 100L600 0L600 100Z" fill="#041a26" stroke="#041a26"></path><path
+            d="M600 100L600 0L500 0Z"
+            fill="#041a26"
+            stroke="#041a26"
+        ></path><path d="M0 200L0 300L100 300Z" fill="#004349" stroke="#004349"></path><path
+            d="M700 300L700 200L600 200Z"
+            fill="#0b7531"
+            stroke="#0b7531"
+        ></path><path d="M300 600L400 600L400 500Z" fill="#00101c" stroke="#00101c"></path><path
+            d="M200 500L200 600L300 600Z"
+            fill="#032430"
+            stroke="#032430"
+        ></path><path d="M100 400L100 500L200 500Z" fill="#003842" stroke="#003842"></path><path
+            d="M0 400L100 500L100 400Z"
+            fill="#0b7531"
+            stroke="#0b7531"
+        ></path><path d="M0 300L0 400L100 400Z" fill="#00101c" stroke="#00101c"></path><path
+            d="M100 500L200 600L200 500Z"
+            fill="#00101c"
+            stroke="#00101c"
+        ></path><path d="M700 200L700 100L600 100Z" fill="#006349" stroke="#006349"></path><path
+            d="M600 500L700 400L600 400Z"
+            fill="#004e4e"
+            stroke="#004e4e"
+        ></path><path d="M100 0L0 100L100 100Z" fill="#00101c" stroke="#00101c"></path><path
+            d="M400 600L500 600L500 500Z"
+            fill="#004e4e"
+            stroke="#004e4e"
+        ></path><path d="M500 600L600 600L600 500Z" fill="#041a26" stroke="#041a26"></path><path
+            d="M600 500L700 500L700 400Z"
+            fill="#00584e"
+            stroke="#00584e"
+        ></path><path d="M600 600L700 500L600 500Z" fill="#006c40" stroke="#006c40"></path><path
+            d="M0 500L100 600L100 500Z"
+            fill="#012e39"
+            stroke="#012e39"
+        ></path><path d="M100 500L100 600L200 600Z" fill="#012e39" stroke="#012e39"></path><path
+            d="M100 0L0 0L0 100Z"
+            fill="#004349"
+            stroke="#004349"
+        ></path><path d="M0 400L0 500L100 500Z" fill="#041a26" stroke="#041a26"></path><path
+            d="M700 100L700 0L600 0Z"
+            fill="#006c40"
+            stroke="#006c40"
+        ></path><path d="M700 300L800 300L700 200Z" fill="#032430" stroke="#032430"></path><path
+            d="M700 200L800 200L700 100Z"
+            fill="#006349"
+            stroke="#006349"
+        ></path><path d="M700 100L800 100L700 0Z" fill="#004349" stroke="#004349"></path><path
+            d="M700 400L800 300L700 300Z"
+            fill="#00584e"
+            stroke="#00584e"
+        ></path><path d="M800 400L800 300L700 400Z" fill="#006349" stroke="#006349"></path><path
+            d="M800 300L800 200L700 200Z"
+            fill="#004349"
+            stroke="#004349"
+        ></path><path d="M700 500L800 400L700 400Z" fill="#041a26" stroke="#041a26"></path><path
+            d="M800 200L800 100L700 100Z"
+            fill="#003842"
+            stroke="#003842"
+        ></path><path d="M0 500L0 600L100 600Z" fill="#006c40" stroke="#006c40"></path><path
+            d="M600 600L700 600L700 500Z"
+            fill="#003842"
+            stroke="#003842"
+        ></path><path d="M700 500L800 500L800 400Z" fill="#032430" stroke="#032430"></path><path
+            d="M700 600L800 500L700 500Z"
+            fill="#0b7531"
+            stroke="#0b7531"
+        ></path><path d="M800 100L800 0L700 0Z" fill="#032430" stroke="#032430"></path><path
+            d="M800 300L900 300L800 200Z"
+            fill="#032430"
+            stroke="#032430"
+        ></path><path d="M800 200L900 200L800 100Z" fill="#032430" stroke="#032430"></path><path
+            d="M800 100L900 100L800 0Z"
+            fill="#006c40"
+            stroke="#006c40"
+        ></path><path d="M800 400L900 300L800 300Z" fill="#006349" stroke="#006349"></path><path
+            d="M900 400L900 300L800 400Z"
+            fill="#012e39"
+            stroke="#012e39"
+        ></path><path d="M900 300L900 200L800 200Z" fill="#006349" stroke="#006349"></path><path
+            d="M800 500L900 400L800 400Z"
+            fill="#041a26"
+            stroke="#041a26"
+        ></path><path d="M900 200L900 100L800 100Z" fill="#00584e" stroke="#00584e"></path><path
+            d="M700 600L800 600L800 500Z"
+            fill="#012e39"
+            stroke="#012e39"
+        ></path><path d="M800 500L900 500L900 400Z" fill="#006349" stroke="#006349"></path><path
+            d="M800 600L900 500L800 500Z"
+            fill="#004e4e"
+            stroke="#004e4e"
+        ></path><path d="M900 100L900 0L800 0Z" fill="#012e39" stroke="#012e39"></path><path
+            d="M800 600L900 600L900 500Z"
+            fill="#00101c"
+            stroke="#00101c"
+        ></path></g
+    ></svg
+>

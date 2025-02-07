@@ -1,0 +1,198 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+
+    --destructive: 0 72.2% 50.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --ring: 240 10% 3.9%;
+
+    --radius: 0.5rem;
+
+    --chart-1: 173 58% 39%;
+    --chart-2: 12 76% 61%;
+
+    --slate-400: 220 6% 66%;
+    --gray-400: 220 5% 65%;
+    --zinc-400: 240 4% 65%;
+    --neutral-400: 0 0% 64%;
+    --stone-400: 30 7% 64%;
+    --red-400: 0 91% 71%;
+    --orange-400: 24 96% 59%;
+    --amber-400: 45 94% 50%;
+    --yellow-400: 42 95% 56%;
+    --lime-400: 83 82% 54%;
+    --green-400: 141 72% 59%;
+    --emerald-400: 152 65% 54%;
+    --teal-400: 174 70% 56%;
+    --cyan-400: 187 83% 55%;
+    --sky-400: 204 96% 60%;
+    --blue-400: 217 92% 64%;
+    --indigo-400: 231 81% 70%;
+    --violet-400: 258 86% 74%;
+    --purple-400: 270 91% 70%;
+    --fuchsia-400: 289 89% 74%;
+    --pink-400: 333 83% 72%;
+    --rose-400: 345 86% 70%;
+
+    --slate-300: 220 6% 76%;
+    --gray-300: 220 5% 75%;
+    --zinc-300: 240 4% 75%;
+    --neutral-300: 0 0% 74%;
+    --stone-300: 30 7% 74%;
+    --red-300: 0 91% 81%;
+    --orange-300: 24 96% 69%;
+    --amber-300: 45 94% 60%;
+    --yellow-300: 42 95% 66%;
+    --lime-300: 83 82% 64%;
+    --green-300: 141 72% 69%;
+    --emerald-300: 152 65% 64%;
+    --teal-300: 174 70% 66%;
+    --cyan-300: 187 83% 65%;
+    --sky-300: 204 96% 70%;
+    --blue-300: 217 92% 74%;
+    --indigo-300: 231 81% 80%;
+    --violet-300: 258 86% 84%;
+    --purple-300: 270 91% 81%;
+    --fuchsia-300: 289 89% 84%;
+    --pink-300: 333 83% 82%;
+    --rose-300: 345 86% 80%;
+
+    --slate-200: 220 6% 86%;
+    --gray-200: 220 5% 85%;
+    --zinc-200: 240 4% 85%;
+    --neutral-200: 0 0% 84%;
+    --stone-200: 30 7% 84%;
+    --red-200: 0 91% 91%;
+    --orange-200: 24 96% 79%;
+    --amber-200: 45 94% 70%;
+    --yellow-200: 42 95% 76%;
+    --lime-200: 83 82% 74%;
+    --green-200: 141 72% 79%;
+    --emerald-200: 152 65% 74%;
+    --teal-200: 174 70% 76%;
+    --cyan-200: 187 83% 75%;
+    --sky-200: 204 96% 80%;
+    --blue-200: 217 92% 84%;
+    --indigo-200: 231 81% 90%;
+    --violet-200: 258 86% 94%;
+    --purple-200: 270 91% 90%;
+    --fuchsia-200: 289 89% 94%;
+    --pink-200: 333 83% 92%;
+    --rose-200: 345 86% 90%;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --ring: 240 4.9% 83.9%;
+  }
+
+  /* @layer base {
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 240 10% 3.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 240 10% 3.9%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 240 10% 3.9%;
+      --primary: 142.1 76.2% 36.3%;
+      --primary-foreground: 355.7 100% 97.3%;
+      --secondary: 240 4.8% 95.9%;
+      --secondary-foreground: 240 5.9% 10%;
+      --muted: 240 4.8% 95.9%;
+      --muted-foreground: 240 3.8% 46.1%;
+      --accent: 240 4.8% 95.9%;
+      --accent-foreground: 240 5.9% 10%;
+      --destructive: 0 72.22% 50.59%;
+      --destructive-foreground: 0 0% 98%;
+      --border: 240 5.9% 90%;
+      --input: 240 5.9% 90%;
+      --ring: 142.1 76.2% 36.3%;
+      --radius: 0.5rem;
+    }
+    .dark {
+      --background: 20 14.3% 4.1%;
+      --foreground: 0 0% 95%;
+      --card: 24 9.8% 10%;
+      --card-foreground: 0 0% 95%;
+      --popover: 0 0% 9%;
+      --popover-foreground: 0 0% 95%;
+      --primary: 142.1 70.6% 45.3%;
+      --primary-foreground: 144.9 80.4% 10%;
+      --secondary: 240 3.7% 15.9%;
+      --secondary-foreground: 0 0% 98%;
+      --muted: 0 0% 15%;
+      --muted-foreground: 240 5% 64.9%;
+      --accent: 12 6.5% 15.1%;
+      --accent-foreground: 0 0% 98%;
+      --destructive: 0 62.8% 30.6%;
+      --destructive-foreground: 0 85.7% 97.3%;
+      --border: 240 3.7% 15.9%;
+      --input: 240 3.7% 15.9%;
+      --ring: 142.4 71.8% 29.2%;
+    }
+  } */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Inter";
+  }
+}
