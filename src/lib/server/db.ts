@@ -2,13 +2,8 @@ import sqlite3 from 'sqlite3'
 import type { Session, User } from './types'
 import { ulid } from 'ulid'
 import { OAuth2Client } from 'google-auth-library'
-import { env as privateEnv } from '$env/dynamic/private'
-import { PUBLIC_GOOGLE_CLIENT_ID, PUBLIC_GOOGLE_REDIRECT_URI } from '$env/static/public'
+import { env } from '$env/dynamic/private'
 import fs from 'fs'
-
-const CLIENT_ID = PUBLIC_GOOGLE_CLIENT_ID
-const CLIENT_SECRET = privateEnv.GOOGLE_CLIENT_SECRET
-const REDIRECT_URI = PUBLIC_GOOGLE_REDIRECT_URI
 
 export class UserService {
 
@@ -234,6 +229,10 @@ export class OAuth2Service {
     private lruList: string[]
     private userService: UserService
 
+    private CLIENT_ID = env.PUBLIC_GOOGLE_CLIENT_ID
+    private CLIENT_SECRET = env.GOOGLE_CLIENT_SECRET
+    private REDIRECT_URI = env.PUBLIC_GOOGLE_REDIRECT_URI
+
     constructor(userService: UserService) {
         this.userService = userService
         this.clientMap = new Map()
@@ -247,7 +246,7 @@ export class OAuth2Service {
             if (!user) {
                 return null
             }
-            client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
+            client = new OAuth2Client(this.CLIENT_ID, this.CLIENT_SECRET, this.REDIRECT_URI)
             client.setCredentials({
                 access_token: user.accessToken,
                 refresh_token: user.refreshToken
@@ -269,7 +268,7 @@ export class OAuth2Service {
     }
 
     newClient(): OAuth2Client {
-        return new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
+        return new OAuth2Client(this.CLIENT_ID, this.CLIENT_SECRET, this.REDIRECT_URI)
     }
 
     private updateLRU(userId: string) {

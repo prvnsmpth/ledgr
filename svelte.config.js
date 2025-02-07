@@ -3,7 +3,6 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { config as dotenvConfig } from 'dotenv'
 
 const envFile = process.env.NODE_ENV === "production" ? ".env.prod" : ".env"
-console.log('Env file: ', envFile)
 dotenvConfig({ path: envFile })
 
 /** @type {import('@sveltejs/kit').Config} */
