@@ -28,7 +28,7 @@ Pull requests and contributions to **ledgr** are welcome!
 
 1. Clone the repository
 ```bash
-git clone https://github.com/ledgr-money/ledgr.git
+git clone https://github.com/prvnsmpth/ledgr.git
 ```
 
 2. Install dependencies
