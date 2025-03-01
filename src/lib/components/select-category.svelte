@@ -1,13 +1,14 @@
 <script lang="ts">
-    import { ExpenseCategoryIcons } from '$lib/components/common'
+    import { ExpenseCategoryIcons, getCategoryIcon } from '$lib/components/common'
     import { Input } from '$lib/components/ui/input'
     import * as Sheet from '$lib/components/ui/sheet'
-    import { ExpenseCategory } from '$lib/db'
-    import { store } from '$lib/db/store'
+    import { ExpenseCategory, type CategoryItem } from '$lib/db'
+    import { categories, store } from '$lib/db/store'
     import { cn } from '$lib/utils'
     import { CircleX, Search } from 'lucide-svelte'
     import { isMobile } from './ui/responsive-modal/responsive'
     import type { Filters } from '$lib/types'
+    import { onMount } from 'svelte'
 
     export let open: boolean
     export let filters: Filters | null = null
@@ -16,16 +17,31 @@
     export let onCategorySelect: () => void
 
     let categoryFilter: string | null = null
-    $: categories = Object.keys(ExpenseCategoryIcons) as ExpenseCategory[]
+    
+    // Make sure we load categories when the component is mounted
+    onMount(async () => {
+        if ($categories.length === 0) {
+            await store.getAllCategories()
+        }
+    })
+    
+    // Get all enabled categories from the database
+    // The database is initialized with all enum categories as default categories
+    // So this will include both default categories and custom ones
+    $: enabledCategoryValues = $categories
+        .filter(cat => cat.isEnabled)
+        .map(cat => cat.value)
+    
+    // Sort and filter categories based on search
     $: sortedCategories = categoryFilter
-        ? categories.sort((a, b) => {
+        ? enabledCategoryValues.sort((a, b) => {
               const ma = a.toLowerCase().includes(categoryFilter!.toLowerCase())
               const mb = b.toLowerCase().includes(categoryFilter!.toLowerCase())
               if (ma && !mb) return -1
               if (!ma && mb) return 1
               return 0
           })
-        : categories
+        : enabledCategoryValues
 
     function handleCategoryFilterChange(e: InputEvent) {
         categoryFilter = (e.target as HTMLInputElement).value
@@ -97,7 +113,7 @@
                     )}
                     on:click={(e) => handleCategorySelect(category)}
                 >
-                    <svelte:component this={ExpenseCategoryIcons[category]} size={24} />
+                    <svelte:component this={getCategoryIcon(category)} size={24} />
                     <div>{category.replaceAll("_", " ")}</div>
                 </button>
             {/each}

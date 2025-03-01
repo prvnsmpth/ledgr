@@ -15,7 +15,8 @@
         Home,
         IndianRupee,
         Settings,
-        SquarePlus
+        SquarePlus,
+        Tags
     } from 'lucide-svelte'
     import { onDestroy } from 'svelte'
     import { quintInOut } from 'svelte/easing'
@@ -32,6 +33,12 @@
         '/transactions': {
             name: 'Transactions',
             icon: IndianRupee,
+            isLink: true,
+            showOnDesktop: true
+        },
+        '/categories': {
+            name: 'Categories',
+            icon: Tags,
             isLink: true,
             showOnDesktop: true
         },

@@ -13,6 +13,10 @@ export enum MessageType {
     LoadTransactions = "loadTransactions",
     ImportFiles = "importFiles",
     TagTransactions = "tagTransactions",
+    GetAllCategories = "getAllCategories",
+    AddCategory = "addCategory",
+    UpdateCategory = "updateCategory",
+    DeleteCategory = "deleteCategory",
 }
 
 export type Message = {

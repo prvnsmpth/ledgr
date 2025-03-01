@@ -310,6 +310,30 @@ async function handleMessage(message: Message) {
             self.postMessage({ id, type, payload: txnIds })
             break
         }
+        // Category management
+        case MessageType.GetAllCategories:
+            db.getAllCategories().then((res) => {
+                self.postMessage({ id, type, payload: res })
+            })
+            break
+        case MessageType.AddCategory: {
+            const category = message.payload
+            const categoryId = await db.addCategory(category)
+            self.postMessage({ id, type, payload: categoryId })
+            break
+        }
+        case MessageType.UpdateCategory: {
+            const { id: categoryId, updates } = message.payload
+            const result = await db.updateCategory(categoryId, updates)
+            self.postMessage({ id, type, payload: result })
+            break
+        }
+        case MessageType.DeleteCategory: {
+            const categoryId = message.payload
+            await db.deleteCategory(categoryId)
+            self.postMessage({ id, type })
+            break
+        }
         default:
     }
 }

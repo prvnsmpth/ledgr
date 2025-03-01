@@ -11,7 +11,8 @@ import {
     type GroupedTransactions,
     type Transaction,
     type CashFlowStats,
-    type LedgrMetadata
+    type LedgrMetadata,
+    type CategoryItem
 } from '.'
 import { getMonth } from '$lib/utils'
 import type { LedgrData } from '$lib/server/types'
@@ -19,6 +20,7 @@ import { env } from '$env/dynamic/public'
 
 export const accounts = writable<Account[]>([])
 export const cashFlowStats = writable<CashFlowStats | null>(null)
+export const categories = writable<CategoryItem[]>([])
 
 // Holds transactions currently displayed on the transactions page
 export const transactions = writable<Transaction[]>([])
@@ -100,6 +102,7 @@ export class Store {
         }
         accounts.set(await this.db.getAllAccounts())
         cashFlowStats.set(await this.db.getCashFlowStats())
+        categories.set(await this.db.getAllCategories())
         storeInitialized.set(true)
     }
 
@@ -305,6 +308,55 @@ export class Store {
 
     async getMetadata(): Promise<LedgrMetadata> {
         return await this.db.getMetadata()
+    }
+
+    // Category management methods
+    async getAllCategories(): Promise<CategoryItem[]> {
+        const allCategories = await this.db.getAllCategories()
+        categories.set(allCategories)
+        return allCategories
+    }
+
+    async getCategoryById(id: IDBValidKey): Promise<CategoryItem | null> {
+        return await this.db.getCategoryById(id)
+    }
+
+    async addCategory(category: Omit<CategoryItem, 'id'>): Promise<IDBValidKey> {
+        try {
+            const categoryId = await this.db.addCategory(category)
+            await this.bumpVersion()
+            const categoryWithId = { ...category, id: categoryId }
+            categories.update((cats) => [...cats, categoryWithId])
+            return categoryId
+        } catch (e: unknown) {
+            console.error('Error adding category', e)
+            throw e
+        }
+    }
+
+    async updateCategory(id: IDBValidKey, updates: Partial<CategoryItem>): Promise<IDBValidKey> {
+        try {
+            const categoryId = await this.db.updateCategory(id, updates)
+            await this.bumpVersion()
+            categories.update((cats) =>
+                cats.map((c) => (c.id === id ? { ...c, ...updates } : c))
+            )
+            return categoryId
+        } catch (e: unknown) {
+            console.error('Error updating category', e)
+            throw e
+        }
+    }
+
+    async deleteCategory(id: IDBValidKey): Promise<void> {
+        try {
+            await this.db.deleteCategory(id)
+            await this.bumpVersion()
+            categories.update((cats) => cats.filter((c) => c.id !== id))
+        } catch (e: unknown) {
+            console.error('Error deleting category', e)
+            throw e
+        }
     }
 
     async setLastSync(lastSync: number) {

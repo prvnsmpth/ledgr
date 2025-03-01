@@ -71,6 +71,7 @@ export type GroupedTransactions = {
     transactions: Transaction[]
 }
 
+// Legacy enum values - kept for backward compatibility
 export enum ExpenseCategory {
     CreditCardPayment = 'credit_card_payment',
     Dining = 'dining',
@@ -96,6 +97,18 @@ export enum ExpenseCategory {
     Untagged = 'untagged',
     Utilities = 'utilities',
     Work = 'work'
+}
+
+// New type for user-defined categories
+export type CategoryItem = {
+    id?: IDBValidKey
+    name: string
+    value: string
+    icon: string
+    color: string
+    emoji: string
+    isDefault: boolean
+    isEnabled: boolean
 }
 
 export type LedgrMetadata = {
@@ -129,39 +142,82 @@ export class LedgrDB {
     constructor() {}
 
     private async openDB(): Promise<IDBDatabase> {
-        const req = indexedDB.open(this.DB_NAME, 2)
+        const req = indexedDB.open(this.DB_NAME, 3)
         return new Promise((resolve, reject) => {
             req.onsuccess = () => resolve(req.result)
             req.onerror = () => reject(req.error)
-            req.onupgradeneeded = () => {
+            req.onupgradeneeded = (event) => {
                 const db = req.result
+                const oldVersion = event.oldVersion
 
-                if (!db.objectStoreNames.contains(this.TXN_STORE)) {
-                    const store = db.createObjectStore(this.TXN_STORE, { keyPath: 'id' })
-                    store.createIndex(this.TXN_UNIQ_INDEX, 'id', { unique: true })
-                    store.createIndex(this.TXN_ACCNT_INDX, 'accountId', { unique: false })
-                    store.createIndex(this.TXN_DATE_INDEX, 'date', { unique: false })
+                if (oldVersion < 1) {
+                    // Initial database setup
+                    if (!db.objectStoreNames.contains(this.TXN_STORE)) {
+                        const store = db.createObjectStore(this.TXN_STORE, { keyPath: 'id' })
+                        store.createIndex(this.TXN_UNIQ_INDEX, 'id', { unique: true })
+                        store.createIndex(this.TXN_ACCNT_INDX, 'accountId', { unique: false })
+                        store.createIndex(this.TXN_DATE_INDEX, 'date', { unique: false })
+                    }
+
+                    if (!db.objectStoreNames.contains(this.ACCOUNT_STORE)) {
+                        const accountStore = db.createObjectStore(this.ACCOUNT_STORE, {
+                            keyPath: 'id',
+                            autoIncrement: true
+                        })
+                        accountStore.createIndex(this.ACCOUNT_UNIQ_INDEX, 'id', { unique: true })
+                        accountStore.createIndex(this.ACCOUNT_NAME_INDEX, 'name', { unique: true })
+                    }
+
+                    if (!db.objectStoreNames.contains(this.TXN_STATS_STORE)) {
+                        db.createObjectStore(this.TXN_STATS_STORE, { autoIncrement: true })
+                    }
+
+                    if (!db.objectStoreNames.contains(this.METADATA_STORE)) {
+                        db.createObjectStore(this.METADATA_STORE, { autoIncrement: true })
+                    }
                 }
 
-                if (!db.objectStoreNames.contains(this.ACCOUNT_STORE)) {
-                    const accountStore = db.createObjectStore(this.ACCOUNT_STORE, {
+                if (oldVersion < 2) {
+                    // Version 2 added the expense category store
+                    if (!db.objectStoreNames.contains(this.EXPENSE_CATEGORY_STORE)) {
+                        db.createObjectStore(this.EXPENSE_CATEGORY_STORE, { autoIncrement: true })
+                    }
+                }
+
+                if (oldVersion < 3) {
+                    // Version 3 updates the expense category store to use keyPath
+                    if (db.objectStoreNames.contains(this.EXPENSE_CATEGORY_STORE)) {
+                        db.deleteObjectStore(this.EXPENSE_CATEGORY_STORE)
+                    }
+                    
+                    const categoryStore = db.createObjectStore(this.EXPENSE_CATEGORY_STORE, {
                         keyPath: 'id',
                         autoIncrement: true
                     })
-                    accountStore.createIndex(this.ACCOUNT_UNIQ_INDEX, 'id', { unique: true })
-                    accountStore.createIndex(this.ACCOUNT_NAME_INDEX, 'name', { unique: true })
-                }
-
-                if (!db.objectStoreNames.contains(this.TXN_STATS_STORE)) {
-                    db.createObjectStore(this.TXN_STATS_STORE, { autoIncrement: true })
-                }
-
-                if (!db.objectStoreNames.contains(this.METADATA_STORE)) {
-                    db.createObjectStore(this.METADATA_STORE, { autoIncrement: true })
-                }
-
-                if (!db.objectStoreNames.contains(this.EXPENSE_CATEGORY_STORE)) {
-                    db.createObjectStore(this.EXPENSE_CATEGORY_STORE, { autoIncrement: true })
+                    categoryStore.createIndex('value', 'value', { unique: true })
+                    
+                    // Initialize with default categories from the enum
+                    const transaction = req.transaction;
+                    if (transaction) {
+                        const store = transaction.objectStore(this.EXPENSE_CATEGORY_STORE)
+                        
+                        // Add all default categories from the enum
+                        Object.values(ExpenseCategory).forEach(value => {
+                            const name = value.split('_').map(word =>
+                                word.charAt(0).toUpperCase() + word.slice(1)
+                            ).join(' ')
+                            
+                            store.add({
+                                name,
+                                value,
+                                icon: value, // Will be mapped to actual icon component
+                                color: value, // Will be mapped to actual color
+                                emoji: value, // Will be mapped to actual emoji
+                                isDefault: true,
+                                isEnabled: true
+                            })
+                        })
+                    }
                 }
             }
         })
@@ -496,6 +552,57 @@ export class LedgrDB {
         return new Promise((resolve, reject) => {
             const req = store.get(id)
             req.onsuccess = () => resolve(req.result || null)
+            req.onerror = () => reject(req.error)
+        })
+    }
+
+    // Category management methods
+    async getAllCategories(): Promise<CategoryItem[]> {
+        const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
+        return new Promise((resolve, reject) => {
+            const req = store.getAll()
+            req.onsuccess = () => resolve(req.result)
+            req.onerror = () => reject(req.error)
+        })
+    }
+
+    async getCategoryById(id: IDBValidKey): Promise<CategoryItem | null> {
+        const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
+        return new Promise((resolve, reject) => {
+            const req = store.get(id)
+            req.onsuccess = () => resolve(req.result || null)
+            req.onerror = () => reject(req.error)
+        })
+    }
+
+    async addCategory(category: Omit<CategoryItem, 'id'>): Promise<IDBValidKey> {
+        const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
+        return new Promise((resolve, reject) => {
+            const req = store.add(category)
+            req.onsuccess = () => resolve(req.result)
+            req.onerror = () => reject(req.error)
+        })
+    }
+
+    async updateCategory(id: IDBValidKey, updates: Partial<CategoryItem>): Promise<IDBValidKey> {
+        const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
+        const existing = await this.getCategoryById(id)
+        if (!existing) {
+            throw new Error(`Category with id ${id} not found`)
+        }
+        return new Promise((resolve, reject) => {
+            const updated = { ...existing, ...updates }
+            const req = store.put(updated)
+            req.onsuccess = () => resolve(req.result)
+            req.onerror = () => reject(req.error)
+        })
+    }
+
+    async deleteCategory(id: IDBValidKey): Promise<void> {
+        const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
+        return new Promise((resolve, reject) => {
+            const req = store.delete(id)
+            req.onsuccess = () => resolve()
             req.onerror = () => reject(req.error)
         })
     }

@@ -8,10 +8,12 @@
     import { cn } from '$lib/utils'
     import { DateFormatter, endOfMonth, endOfYear, getLocalTimeZone, startOfMonth, startOfYear, today, type CalendarDate } from '@internationalized/date'
     import { Calendar as CalendarIcon, Radio } from 'lucide-svelte'
-    import { ExpenseCategoryIcons } from './common'
+    import { ExpenseCategoryIcons, getCategoryIcon } from './common'
     import { isMobile } from './ui/responsive-modal/responsive'
     import * as RadioGroup from '$lib/components/ui/radio-group'
-    import { TransactionType } from '$lib/db'
+    import { TransactionType, type CategoryItem } from '$lib/db'
+    import { categories, store } from '$lib/db/store'
+    import { onMount } from 'svelte'
 
     const dateFormatter = new DateFormatter('en-IN', { dateStyle: 'short' })
 
@@ -22,6 +24,13 @@
 
     export let open: boolean;
     export let filters: Filters
+    
+    // Make sure we load categories when the component is mounted
+    onMount(async () => {
+        if ($categories.length === 0) {
+            await store.getAllCategories()
+        }
+    })
 
     let selectedQuickFilter: string | null = null
 
@@ -157,17 +166,17 @@
             <div class="flex flex-col gap-1.5">
                 <div class="uppercase text-muted-foreground font-bold text-xs">Category</div>
                 <div class="flex flex-wrap gap-1.5">
-                    {#each Object.entries(ExpenseCategoryIcons) as [category, icon]}
+                    {#each $categories.filter(cat => cat.isEnabled) as category}
                         <Button
                             variant="secondary"
                             size="sm"
                             class={cn("flex gap-1.5 text-muted-foreground font-bold text-sm focus-visible:ring-0",
-                                localCategoryFilter.indexOf(category) !== -1 ? 'bg-primary hover:bg-primary text-primary-foreground' : ''
+                                localCategoryFilter.indexOf(category.value) !== -1 ? 'bg-primary hover:bg-primary text-primary-foreground' : ''
                             )}
-                            on:click={() => toggleCategory(category)}
+                            on:click={() => toggleCategory(category.value)}
                         >
-                            <svelte:component this={icon} size={18} />
-                            <span>{category.replaceAll("_", " ")}</span>
+                            <svelte:component this={getCategoryIcon(category.value)} size={18} />
+                            <span>{category.name}</span>
                         </Button>
                     {/each}
                 </div>

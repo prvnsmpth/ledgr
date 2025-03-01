@@ -91,6 +91,10 @@ export function getCategoryColor(category: string) {
     return ExpenseCategoryColors[category as ExpenseCategory] || 'hsl(var(--neutral-400))'
 }
 
+export function getCategoryEmoji(category: string) {
+    return ExpenseCategoryEmojis[category as ExpenseCategory] || '❓'
+}
+
 export const ExpenseCategoryEmojis = {
     [ExpenseCategory.CreditCardPayment]: '💳',
     [ExpenseCategory.Dining]: '🍽️',

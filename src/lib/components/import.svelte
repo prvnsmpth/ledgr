@@ -61,7 +61,7 @@
         accountType = selectedAccount?.type || AccountType.Bank
         bank = selectedAccount?.bank || undefined
     }
-    let selectedBank: Selected<SupportedBank | null>
+    let selectedBank: Selected<SupportedBank | null> = { value: null }
     $: if (selectedBank?.value) {
         bank = selectedBank.value
         bankError = null
