@@ -57,6 +57,15 @@
         }
     }
 
+    if ($page.url.searchParams.has('q')) {
+        console.log(`Setting search filter from URL`)
+        let q = $page.url.searchParams.get('q')!
+        filters = {
+            ...filters,
+            searchFilter: q
+        }
+    }
+
     let selectedAccountId: IDBValidKey | null = null
     $: selectedAccount = $accounts.find(acc => acc.id === selectedAccountId)
 
@@ -69,10 +78,18 @@
 
     const handleSearchFilterChange = debounce((e: Event) => {
         const el = e.target as HTMLInputElement
+        const query = el.value;
         filters = {
             ...filters,
-            searchFilter: el.value
+            searchFilter: query
         }
+        const params = new URLSearchParams($page.url.searchParams);
+        if (query) {
+            params.set('q', query);
+        } else {
+            params.delete('q');
+        }
+        goto(`?${params.toString()}`, { replaceState: true });
     }, 300)
 
     async function applyFilters(filters?: Filters) {
