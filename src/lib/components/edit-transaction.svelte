@@ -8,9 +8,9 @@
     import { Textarea } from '$lib/components/ui/textarea'
     import { Label } from '$lib/components/ui/label'
     import * as Popover from '$lib/components/ui/popover'
-    import { ExpenseCategory, type Transaction, TransactionType } from '$lib/db'
+    import { type Transaction, TransactionType } from '$lib/db'
+    import { getCategoryEmoji } from '$lib/components/common'
     import { cn } from '$lib/utils'
-    import { ExpenseCategoryEmojis } from '$lib/components/common'
     import type { Selected } from 'bits-ui'
     import { Calendar as CalendarIcon, ChevronsUpDown } from 'lucide-svelte'
     import {
@@ -19,7 +19,7 @@
         getLocalTimeZone,
         type DateValue
     } from '@internationalized/date'
-    import { store } from '$lib/db/store'
+    import { store, categories, categoryByValue } from '$lib/db/store'
     import { tick } from 'svelte'
 
     export let open: boolean
@@ -34,23 +34,16 @@
     ) as DateValue
     $: description = txn.description
     $: amount = txn.amount
-    $: selectedExpenseCategory = getSelectedExpenseCategory()
+
+    // Get enabled categories (only sub-categories, not super-categories)
+    $: enabledCategories = $categories.filter(c => c.isEnabled && c.parentId !== null)
 
     let expenseCategoryDropdownOpen = false
-    let selectedExpCategory: ExpenseCategory | undefined
+    let selectedExpCategory: string | undefined
 
-    function getSelectedExpenseCategory(): Selected<ExpenseCategory> | undefined {
-        const entry = Object.entries(ExpenseCategory).find(([k, v]) => v === txn.expenseCategory)
-        if (!entry) {
-            return undefined
-        }
-        const [key, value] = entry
-        const icon = ExpenseCategoryEmojis[value]
-
-        return {
-            value,
-            label: `${icon} ${key}`
-        }
+    // Initialize selectedExpCategory from the transaction
+    $: if (txn.expenseCategory) {
+        selectedExpCategory = txn.expenseCategory
     }
 
     async function handleUpdate() {
@@ -59,7 +52,7 @@
             date: date.toDate(getLocalTimeZone()),
             description,
             amount,
-            expenseCategory: selectedExpenseCategory?.value || txn.expenseCategory
+            expenseCategory: selectedExpCategory || txn.expenseCategory
         }
 
         await store.updateTransaction(txn.id, updatedTxn)
@@ -81,6 +74,13 @@
         tick().then(() => {
             document.getElementById(triggerId)?.focus()
         })
+    }
+
+    function getSelectedCategoryLabel(): string {
+        if (!selectedExpCategory) return 'Select a category'
+        const cat = $categoryByValue.get(selectedExpCategory)
+        if (!cat) return selectedExpCategory
+        return `${cat.emoji || '❓'} ${cat.name}`
     }
 </script>
 
@@ -154,9 +154,7 @@
                                 role="combobox"
                                 aria-expanded={expenseCategoryDropdownOpen}
                             >
-                                {selectedExpCategory
-                                    ? `${ExpenseCategoryEmojis[selectedExpCategory]} ${selectedExpCategory}`
-                                    : 'Select a category'}
+                                {getSelectedCategoryLabel()}
                                 <ChevronsUpDown class="mr-2 h-4 w-4" />
                             </Button>
                         </Popover.Trigger>
@@ -164,13 +162,19 @@
                             <Command.Root>
                                 <Command.Input placeholder="Search..." class="text-base" />
                                 <Command.Empty>No category found</Command.Empty>
-                                <Command.Group>
-                                    {#each Object.entries(ExpenseCategory) as [key, value]}
-                                        <Command.Item {value}>
+                                <Command.Group class="max-h-64 overflow-y-auto">
+                                    {#each enabledCategories as category}
+                                        <Command.Item
+                                            value={category.value}
+                                            onSelect={(value) => {
+                                                selectedExpCategory = value
+                                                closeAndFocusDropdown(ids.trigger)
+                                            }}
+                                        >
                                             <div class="text-xl mr-2">
-                                                {ExpenseCategoryEmojis[value]}
+                                                {category.emoji || '❓'}
                                             </div>
-                                            {key}
+                                            {category.name}
                                         </Command.Item>
                                     {/each}
                                 </Command.Group>

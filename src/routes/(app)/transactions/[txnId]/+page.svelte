@@ -1,7 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation'
     import { page } from '$app/stores'
-    import { ExpenseCategoryIcons } from '$lib/components/common'
+    import { getCategoryIcon } from '$lib/components/common'
     import Loader from '$lib/components/loader.svelte'
     import SelectCategory from '$lib/components/select-category.svelte'
     import { Button } from '$lib/components/ui/button'
@@ -9,23 +9,26 @@
     import * as Sheet from '$lib/components/ui/sheet'
     import { Switch } from '$lib/components/ui/switch'
     import { Label } from '$lib/components/ui/label'
-    import { type Account, ExpenseCategory, type Transaction, TransactionType } from '$lib/db'
-    import { store, storeInitialized } from '$lib/db/store'
+    import { type Account, type Transaction, TransactionType } from '$lib/db'
+    import { store, storeInitialized, categoryByValue } from '$lib/db/store'
     import { cn, getFormattedDate, formatAmount } from '$lib/utils'
     import {
         ArrowDown,
         ArrowUp,
         Calendar as CalendarIcon,
         ChevronLeft,
+        FileQuestion,
+        Icon,
         Trash2
     } from 'lucide-svelte'
     import { BankIcons } from '$lib/components/common'
     import * as Modal from '$lib/components/ui/responsive-modal'
-    import { onMount } from 'svelte'
+    import { onMount, SvelteComponent } from 'svelte'
 
     let txnId = $page.params.txnId
     let txn: Transaction | null
     let account: Account | null
+    let icon: typeof FileQuestion
 
     onMount(async () => {
         console.log(`Mounting Transaction page`)
@@ -36,6 +39,7 @@
         console.log(`Fetching data`)
         txn = await store.getTransaction(txnId)
         if (txn) {
+            icon = getCategoryIcon(txn.expenseCategory || 'untagged')
             account = await store.getAccount(txn.accountId)
         }
     }
@@ -108,11 +112,8 @@
                     class="flex items-center gap-2 text-md font-semibold p-2 rounded-lg text-muted-foreground bg-accent active:scale-95 transition-transform plausible-event-name=TagSingleOpen"
                     on:click={() => (selectCategoryOpen = true)}
                 >
-                    <svelte:component
-                        this={ExpenseCategoryIcons[txn.expenseCategory || ExpenseCategory.Untagged]}
-                        size={24}
-                    />
-                    <div>{(txn.expenseCategory || ExpenseCategory.Untagged).replaceAll("_", " ")}</div>
+                    <svelte:component this={icon} size={24} />
+                    <div>{$categoryByValue.get(txn.expenseCategory || 'untagged')?.name || (txn.expenseCategory || 'Untagged').replaceAll("_", " ")}</div>
                 </button>
             </div>
         </Card.Content>

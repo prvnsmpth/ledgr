@@ -1,4 +1,9 @@
 import type { Filters } from "$lib/types"
+import {
+    ALL_DEFAULT_CATEGORY_SEEDS,
+    LEGACY_CATEGORY_MAP,
+    type CategorySeedData
+} from "./category-seed-data"
 
 export enum TransactionType {
     Debit = 'debit',
@@ -30,7 +35,7 @@ export type Transaction = {
     description: string
     txnType: TransactionType
     accountId: IDBValidKey
-    expenseCategory?: ExpenseCategory
+    expenseCategory?: string
     excludeFromCashFlow?: boolean
 }
 
@@ -71,44 +76,17 @@ export type GroupedTransactions = {
     transactions: Transaction[]
 }
 
-// Legacy enum values - kept for backward compatibility
-export enum ExpenseCategory {
-    CreditCardPayment = 'credit_card_payment',
-    Dining = 'dining',
-    Entertainment = 'entertainment',
-    Gift = 'gift',
-    Groceries = 'groceries',
-    Gym = 'gym',
-    Health = 'health',
-    Internet = 'internet',
-    Investment = 'investment',
-    LoanEMI = 'emi',
-    Netflix = 'netflix',
-    Other = 'other',
-    Pets = 'pets',
-    Phone = 'phone',
-    Rent = 'rent',
-    SelfTransfer = 'self_transfer',
-    Shopping = 'shopping',
-    Streaming = 'streaming',
-    Swiggy = 'swiggy',
-    Transport = 'transport',
-    Travel = 'travel',
-    Untagged = 'untagged',
-    Utilities = 'utilities',
-    Work = 'work'
-}
-
-// New type for user-defined categories
-export type CategoryItem = {
+// (User-defined + default) categories
+export type ExpenseCategory = {
     id?: IDBValidKey
     name: string
     value: string
-    icon: string
-    color: string
-    emoji: string
+    icon?: string
+    color?: string
+    emoji?: string
     isDefault: boolean
     isEnabled: boolean
+    parentId?: IDBValidKey | null
 }
 
 export type LedgrMetadata = {
@@ -134,21 +112,24 @@ export class LedgrDB {
 
     private readonly TXN_STATS_STORE = 'txn_stats'
 
-    // Stores expense categories, allowing the user to add/remove categories as they please
+    // Stores expense categories, allowing the user to add/remove categories
     private readonly EXPENSE_CATEGORY_STORE = 'expense_categories'
+    private readonly EXPENSE_CATEGORY_VAL_IDX = 'expense_category_value_idx'
 
     private db: IDBDatabase | undefined
 
     constructor() {}
 
     private async openDB(): Promise<IDBDatabase> {
-        const req = indexedDB.open(this.DB_NAME, 3)
+        const req = indexedDB.open(this.DB_NAME, 4)
         return new Promise((resolve, reject) => {
             req.onsuccess = () => resolve(req.result)
             req.onerror = () => reject(req.error)
             req.onupgradeneeded = (event) => {
+                console.log('Upgrading database...')
                 const db = req.result
                 const oldVersion = event.oldVersion
+                console.log('Old version:', oldVersion)
 
                 if (oldVersion < 1) {
                     // Initial database setup
@@ -189,34 +170,53 @@ export class LedgrDB {
                     if (db.objectStoreNames.contains(this.EXPENSE_CATEGORY_STORE)) {
                         db.deleteObjectStore(this.EXPENSE_CATEGORY_STORE)
                     }
-                    
+
                     const categoryStore = db.createObjectStore(this.EXPENSE_CATEGORY_STORE, {
                         keyPath: 'id',
-                        autoIncrement: true
                     })
-                    categoryStore.createIndex('value', 'value', { unique: true })
-                    
-                    // Initialize with default categories from the enum
+                    categoryStore.createIndex(this.EXPENSE_CATEGORY_VAL_IDX, 'value', { unique: true })
+
+                    // Initialize with default categories from seed data
                     const transaction = req.transaction;
                     if (transaction) {
                         const store = transaction.objectStore(this.EXPENSE_CATEGORY_STORE)
-                        
-                        // Add all default categories from the enum
-                        Object.values(ExpenseCategory).forEach(value => {
-                            const name = value.split('_').map(word =>
-                                word.charAt(0).toUpperCase() + word.slice(1)
-                            ).join(' ')
-                            
-                            store.add({
-                                name,
-                                value,
-                                icon: value, // Will be mapped to actual icon component
-                                color: value, // Will be mapped to actual color
-                                emoji: value, // Will be mapped to actual emoji
+
+                        // Add all categories from seed data
+                        for (const seed of ALL_DEFAULT_CATEGORY_SEEDS) {
+                            const category: ExpenseCategory = {
+                                id: seed.value,
+                                name: seed.name,
+                                value: seed.value,
+                                icon: seed.iconName,
+                                color: seed.color,
+                                emoji: seed.emoji,
                                 isDefault: true,
-                                isEnabled: true
-                            })
-                        })
+                                isEnabled: true,
+                                parentId: seed.parentValue
+                            }
+
+                            console.log('Adding category:', category)
+                            store.add(category)
+                        }
+
+                        // Migrate legacy category values in transactions
+                        const transactionStore = transaction.objectStore(this.TXN_STORE)
+                        const idbReq = transactionStore.getAll()
+                        idbReq.onsuccess = () => {
+                            const transactions = idbReq.result
+
+                            // Iterate over transactions, update the store if the category is set
+                            for (const txn of transactions) {
+                                if (txn.expenseCategory) {
+                                    const newCategory = LEGACY_CATEGORY_MAP[txn.expenseCategory]
+                                    if (newCategory && newCategory !== txn.expenseCategory) {
+                                        console.log('Migrating transaction category:', txn.expenseCategory, '->', newCategory)
+                                        txn.expenseCategory = newCategory
+                                        transactionStore.put(txn)
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -363,7 +363,7 @@ export class LedgrDB {
             m = m && txn.txnType === typeFilter
         }
         if (categoryFilter.length > 0) {
-            m = m && categoryFilter.includes(txn.expenseCategory || ExpenseCategory.Untagged)
+            m = m && categoryFilter.includes(txn.expenseCategory || 'untagged')
         }
         return m
     }
@@ -461,17 +461,44 @@ export class LedgrDB {
         })
     }
 
+    async getExpenseCategoryById(id: IDBValidKey): Promise<ExpenseCategory | null> {
+        const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
+        return new Promise((resolve, reject) => {
+            const req = store.get(id)
+            req.onsuccess = () => resolve(req.result || null)
+            req.onerror = () => reject(req.error)
+        })
+    }
+
+    async createExpenseCategory(category: ExpenseCategory): Promise<IDBValidKey> {
+        const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
+        return new Promise((resolve, reject) => {
+            const req = store.add(category)
+            req.onsuccess = () => resolve(req.result)
+            req.onerror = () => reject(req.error)
+        })
+    }
+
     async tagTransaction(
         txnId: IDBValidKey,
-        expenseCategory: ExpenseCategory
+        expenseCategory: string
     ): Promise<IDBValidKey> {
+        const category = await this.getExpenseCategoryById(expenseCategory)
+        if (!category) {
+            throw new Error(`Expense category with id ${expenseCategory} not found`)
+        }
         return this.updateTransaction(txnId, { expenseCategory })
     }
 
     async tagAllTransactions(
         filters: Filters,
-        expenseCategory: ExpenseCategory
+        expenseCategory: string
     ): Promise<IDBValidKey[]> {
+        const exists = await this.getExpenseCategoryById(expenseCategory)
+        if (!exists) {
+            throw new Error(`Expense category with id ${expenseCategory} not found`)
+        }
+
         const store = await this.getStore(this.TXN_STORE)
         const index = store.index(this.TXN_DATE_INDEX)
         return new Promise((resolve, reject) => {
@@ -557,7 +584,7 @@ export class LedgrDB {
     }
 
     // Category management methods
-    async getAllCategories(): Promise<CategoryItem[]> {
+    async getAllCategories(): Promise<ExpenseCategory[]> {
         const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
         return new Promise((resolve, reject) => {
             const req = store.getAll()
@@ -566,7 +593,7 @@ export class LedgrDB {
         })
     }
 
-    async getCategoryById(id: IDBValidKey): Promise<CategoryItem | null> {
+    async getCategoryById(id: IDBValidKey): Promise<ExpenseCategory | null> {
         const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
         return new Promise((resolve, reject) => {
             const req = store.get(id)
@@ -575,7 +602,7 @@ export class LedgrDB {
         })
     }
 
-    async addCategory(category: Omit<CategoryItem, 'id'>): Promise<IDBValidKey> {
+    async addCategory(category: Omit<ExpenseCategory, 'id'>): Promise<IDBValidKey> {
         const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
         return new Promise((resolve, reject) => {
             const req = store.add(category)
@@ -584,7 +611,7 @@ export class LedgrDB {
         })
     }
 
-    async updateCategory(id: IDBValidKey, updates: Partial<CategoryItem>): Promise<IDBValidKey> {
+    async updateCategory(id: IDBValidKey, updates: Partial<ExpenseCategory>): Promise<IDBValidKey> {
         const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
         const existing = await this.getCategoryById(id)
         if (!existing) {
@@ -603,6 +630,110 @@ export class LedgrDB {
         return new Promise((resolve, reject) => {
             const req = store.delete(id)
             req.onsuccess = () => resolve()
+            req.onerror = () => reject(req.error)
+        })
+    }
+
+    /**
+     * Seeds default categories if the category store is empty.
+     * Called on app initialization to ensure default categories exist.
+     */
+    async seedDefaultCategoriesIfEmpty(): Promise<void> {
+        const existingCategories = await this.getAllCategories()
+        if (existingCategories.length > 0) {
+            return
+        }
+
+        console.log('Seeding default categories...')
+        const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
+
+        for (const seed of ALL_DEFAULT_CATEGORY_SEEDS) {
+            const category: ExpenseCategory = {
+                id: seed.value,
+                name: seed.name,
+                value: seed.value,
+                icon: seed.iconName,
+                color: seed.color,
+                emoji: seed.emoji,
+                isDefault: true,
+                isEnabled: true,
+                parentId: seed.parentValue
+            }
+
+            await new Promise<void>((resolve, reject) => {
+                const req = store.add(category)
+                req.onsuccess = () => resolve()
+                req.onerror = () => {
+                    console.error('Error adding category:', req.error)
+                    reject(req.error)
+                }
+            })
+        }
+
+        console.log('Default categories seeded successfully')
+    }
+
+    /**
+     * Clears all categories from the store.
+     * Used during sync import to replace with synced categories.
+     */
+    async clearAllCategories(): Promise<void> {
+        const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
+        return new Promise((resolve, reject) => {
+            const req = store.clear()
+            req.onsuccess = () => resolve()
+            req.onerror = () => reject(req.error)
+        })
+    }
+
+    /**
+     * Deletes a category and resets all transactions with that category to 'untagged'.
+     * Returns the number of transactions that were reset.
+     */
+    async deleteCategoryWithTransactionReset(categoryId: IDBValidKey): Promise<number> {
+        const category = await this.getCategoryById(categoryId)
+        if (!category) {
+            return 0
+        }
+
+        const categoryValue = category.value
+        let resetCount = 0
+
+        // Reset all transactions with this category to 'untagged'
+        const txnStore = await this.getStore(this.TXN_STORE)
+        await new Promise<void>((resolve, reject) => {
+            const req = txnStore.openCursor()
+            req.onsuccess = (evt) => {
+                const cursor = (evt.target as IDBRequest).result
+                if (cursor) {
+                    if (cursor.value.expenseCategory === categoryValue) {
+                        cursor.update({ ...cursor.value, expenseCategory: 'untagged' })
+                        resetCount++
+                    }
+                    cursor.continue()
+                } else {
+                    resolve()
+                }
+            }
+            req.onerror = () => reject(req.error)
+        })
+
+        // Delete the category
+        await this.deleteCategory(categoryId)
+
+        console.log(`Deleted category ${categoryValue}, reset ${resetCount} transactions to untagged`)
+        return resetCount
+    }
+
+    /**
+     * Gets a category by its value (the string identifier used in transactions).
+     */
+    async getCategoryByValue(value: string): Promise<ExpenseCategory | null> {
+        const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
+        const index = store.index(this.EXPENSE_CATEGORY_VAL_IDX)
+        return new Promise((resolve, reject) => {
+            const req = index.get(value)
+            req.onsuccess = () => resolve(req.result || null)
             req.onerror = () => reject(req.error)
         })
     }

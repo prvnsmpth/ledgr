@@ -2,7 +2,6 @@ import { MessageType, type Filters, type Message } from '$lib/types'
 import { derived, writable } from 'svelte/store'
 import {
     AccountType,
-    ExpenseCategory,
     StoreError,
     SupportedBank,
     LedgrDB,
@@ -12,15 +11,40 @@ import {
     type Transaction,
     type CashFlowStats,
     type LedgrMetadata,
-    type CategoryItem
+    type ExpenseCategory
 } from '.'
 import { getMonth } from '$lib/utils'
 import type { LedgrData } from '$lib/server/types'
-import { env } from '$env/dynamic/public'
 
 export const accounts = writable<Account[]>([])
 export const cashFlowStats = writable<CashFlowStats | null>(null)
-export const categories = writable<CategoryItem[]>([])
+export const categories = writable<ExpenseCategory[]>([])
+
+// Derived stores for efficient category lookups
+export const categoryByValue = derived(categories, ($categories) => {
+    const map = new Map<string, ExpenseCategory>()
+    for (const cat of $categories) {
+        map.set(cat.value, cat)
+    }
+    return map
+})
+
+export const categoriesByParent = derived(categories, ($categories) => {
+    const map = new Map<string | null, ExpenseCategory[]>()
+    for (const cat of $categories) {
+        const parentKey = cat.parentId?.toString() || null
+        if (!map.has(parentKey)) {
+            map.set(parentKey, [])
+        }
+        map.get(parentKey)!.push(cat)
+    }
+    return map
+})
+
+// Helper to get display name for a category value
+export function getCategoryDisplayName(value: string, categoryMap: Map<string, ExpenseCategory>): string {
+    return categoryMap.get(value)?.name || value.replaceAll('_', ' ')
+}
 
 // Holds transactions currently displayed on the transactions page
 export const transactions = writable<Transaction[]>([])
@@ -92,8 +116,16 @@ export class Store {
     }
 
     async init(): Promise<void> {
+        console.log('initing store..')
         await this.db.init()
+        console.log('DB initialized')
+
+        // Seed default categories if the store is empty
+        await this.db.seedDefaultCategoriesIfEmpty()
+        console.log('Categories seeded')
+
         await this.dispatchToWorker({ type: MessageType.Init })
+        console.log('Worker initialized')
 
         const currentHostname = window.location.host
         const isDemo = currentHostname.startsWith('demo.')
@@ -102,7 +134,9 @@ export class Store {
         }
         accounts.set(await this.db.getAllAccounts())
         cashFlowStats.set(await this.db.getCashFlowStats())
-        categories.set(await this.db.getAllCategories())
+
+        const allCategories = await this.db.getAllCategories()
+        categories.set(allCategories)
         storeInitialized.set(true)
     }
 
@@ -176,8 +210,9 @@ export class Store {
             payload: { limit: -1 }
         })
         const accounts = await this.dispatchToWorker({ type: MessageType.GetAllAccounts })
+        const allCategories = await this.db.getAllCategories()
         const version = await this.getVersion()
-        return { version, transactions, accounts }
+        return { version, transactions, accounts, categories: allCategories }
     }
 
     // Import transactions and accounts from a JSON object created by the export method
@@ -192,6 +227,13 @@ export class Store {
         }))
         await this.dispatchToWorker({ type: MessageType.LoadTransactions, payload: transactions })
         await this.dispatchToWorker({ type: MessageType.LoadAccounts, payload: accounts })
+
+        // Import categories if present in the data
+        if (data.categories && data.categories.length > 0) {
+            await this.dispatchToWorker({ type: MessageType.LoadCategories, payload: data.categories })
+            categories.set(data.categories)
+        }
+
         await this.dispatchToWorker({ type: MessageType.ComputeTransactionStats })
         await this.setVersion(data.version)
     }
@@ -259,7 +301,7 @@ export class Store {
         })
     }
 
-    async tagSingleTransaction(txnId: IDBValidKey, expenseCategory: ExpenseCategory) {
+    async tagSingleTransaction(txnId: IDBValidKey, expenseCategory: string) {
         await this.db.tagTransaction(txnId, expenseCategory)
         await this.bumpVersion()
         transactions.update((txns) =>
@@ -271,7 +313,7 @@ export class Store {
         })
     }
 
-    async tagAllTransactions(filters: Filters, expenseCategory: ExpenseCategory) {
+    async tagAllTransactions(filters: Filters, expenseCategory: string) {
         console.log('Tagging transactions', filters, expenseCategory)
         const txnIds = new Set(
             await this.dispatchToWorker({
@@ -311,17 +353,17 @@ export class Store {
     }
 
     // Category management methods
-    async getAllCategories(): Promise<CategoryItem[]> {
+    async getAllCategories(): Promise<ExpenseCategory[]> {
         const allCategories = await this.db.getAllCategories()
         categories.set(allCategories)
         return allCategories
     }
 
-    async getCategoryById(id: IDBValidKey): Promise<CategoryItem | null> {
+    async getCategoryById(id: IDBValidKey): Promise<ExpenseCategory | null> {
         return await this.db.getCategoryById(id)
     }
 
-    async addCategory(category: Omit<CategoryItem, 'id'>): Promise<IDBValidKey> {
+    async addCategory(category: Omit<ExpenseCategory, 'id'>): Promise<IDBValidKey> {
         try {
             const categoryId = await this.db.addCategory(category)
             await this.bumpVersion()
@@ -334,7 +376,7 @@ export class Store {
         }
     }
 
-    async updateCategory(id: IDBValidKey, updates: Partial<CategoryItem>): Promise<IDBValidKey> {
+    async updateCategory(id: IDBValidKey, updates: Partial<ExpenseCategory>): Promise<IDBValidKey> {
         try {
             const categoryId = await this.db.updateCategory(id, updates)
             await this.bumpVersion()
@@ -355,6 +397,43 @@ export class Store {
             categories.update((cats) => cats.filter((c) => c.id !== id))
         } catch (e: unknown) {
             console.error('Error deleting category', e)
+            throw e
+        }
+    }
+
+    /**
+     * Deletes a category and resets all transactions with that category to 'untagged'.
+     * Returns the number of transactions that were reset.
+     */
+    async deleteCategoryWithReset(id: IDBValidKey): Promise<number> {
+        try {
+            // Get category value before deletion
+            const category = await this.db.getCategoryById(id)
+            if (!category) {
+                return 0
+            }
+            const categoryValue = category.value
+
+            const resetCount = await this.db.deleteCategoryWithTransactionReset(id)
+            await this.bumpVersion()
+            categories.update((cats) => cats.filter((c) => c.id !== id))
+
+            // Update local transaction store - any that had this category now have 'untagged'
+            transactions.update((txns) =>
+                txns.map((t) =>
+                    t.expenseCategory === categoryValue
+                        ? { ...t, expenseCategory: 'untagged' }
+                        : t
+                )
+            )
+
+            // Recompute stats
+            this.dispatchToWorker({ type: MessageType.ComputeTransactionStats }).then((res) => {
+                cashFlowStats.set(res)
+            })
+            return resetCount
+        } catch (e: unknown) {
+            console.error('Error deleting category with reset', e)
             throw e
         }
     }

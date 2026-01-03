@@ -8,11 +8,11 @@
     import { ChevronLeft, ChevronRight } from 'lucide-svelte'
     import { cubicOut } from 'svelte/easing'
 
-    import { ExpenseCategory, type CashFlowStats } from '$lib/db'
+    import { type CashFlowStats } from '$lib/db'
     import { MONTHS, fromMonthStr } from '$lib/utils'
     import { CalendarDate } from '@internationalized/date'
     import type { Selected } from 'bits-ui'
-    import { getCategoryIcon } from '$lib/components/common'
+    import { getCategoryIcon, getCategoryColor } from '$lib/components/common'
 
     const amtFmt = new Intl.NumberFormat('en-IN', {
         style: 'currency',
@@ -136,36 +136,9 @@
                 return acc
             }, [])
             ?.sort((a, b) => b.amount - a.amount) || []
-    $: colorKeys = expenseByCategory.map((row) => row.category) as ExpenseCategory[]
+    $: colorKeys = expenseByCategory.map((row) => row.category)
 
-    let categoryToColor = {
-        [ExpenseCategory.CreditCardPayment]: 'hsl(var(--stone-400))',       // Neutral color
-        [ExpenseCategory.Dining]: 'hsl(var(--rose-400))',                   // Rose
-        [ExpenseCategory.Entertainment]: 'hsl(var(--fuchsia-400))',         // Fuchsia
-        [ExpenseCategory.Gift]: 'hsl(var(--violet-400))',                   // Violet
-        [ExpenseCategory.Groceries]: 'hsl(var(--green-400))',               // Green
-        [ExpenseCategory.Gym]: 'hsl(var(--emerald-400))',                   // Emerald
-        [ExpenseCategory.Health]: 'hsl(var(--teal-400))',                   // Teal
-        [ExpenseCategory.Internet]: 'hsl(var(--cyan-400))',                 // Cyan
-        [ExpenseCategory.Investment]: 'hsl(var(--blue-400))',               // Blue
-        [ExpenseCategory.LoanEMI]: 'hsl(var(--slate-400))',                 // Slate
-        [ExpenseCategory.Netflix]: 'hsl(var(--red-400))',                   // Red
-        [ExpenseCategory.Other]: 'hsl(var(--neutral-400))',                 // Neutral
-        [ExpenseCategory.Pets]: 'hsl(var(--pink-400))',                     // Pink
-        [ExpenseCategory.Phone]: 'hsl(var(--indigo-400))',                  // Indigo
-        [ExpenseCategory.Rent]: 'hsl(var(--zinc-400))',                     // Zinc
-        [ExpenseCategory.SelfTransfer]: 'hsl(var(--gray-400))',             // Gray
-        [ExpenseCategory.Shopping]: 'hsl(var(--purple-400))',               // Purple
-        [ExpenseCategory.Streaming]: 'hsl(var(--fuchsia-400))',             // Fuchsia (alternative for entertainment)
-        [ExpenseCategory.Swiggy]: 'hsl(var(--orange-400))',                 // Orange
-        [ExpenseCategory.Transport]: 'hsl(var(--amber-400))',               // Amber
-        [ExpenseCategory.Travel]: 'hsl(var(--sky-400))',                    // Sky
-        [ExpenseCategory.Untagged]: 'hsl(var(--stone-400))',                // Stone (neutral)
-        [ExpenseCategory.Utilities]: 'hsl(var(--yellow-400))',              // Yellow
-        [ExpenseCategory.Work]: 'hsl(var(--lime-400))',                     // Lime
-    };
-
-    $: keyColors = colorKeys.map((key: ExpenseCategory) => categoryToColor[key])
+    $: keyColors = colorKeys.map((key: string) => getCategoryColor(key))
 </script>
 
 <Card.Root>

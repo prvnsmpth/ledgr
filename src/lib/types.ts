@@ -17,6 +17,7 @@ export enum MessageType {
     AddCategory = "addCategory",
     UpdateCategory = "updateCategory",
     DeleteCategory = "deleteCategory",
+    LoadCategories = "loadCategories",
 }
 
 export type Message = {

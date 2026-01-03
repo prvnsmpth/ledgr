@@ -1,19 +1,19 @@
 <script lang="ts">
-    import { Button } from '$lib/components/ui/button'
-    import * as Popover from '$lib/components/ui/popover'
-    import { Label } from '$lib/components/ui/label'
-    import { RangeCalendar } from '$lib/components/ui/range-calendar'
-    import * as Sheet from '$lib/components/ui/sheet'
-    import type { Filters } from '$lib/types'
-    import { cn } from '$lib/utils'
-    import { DateFormatter, endOfMonth, endOfYear, getLocalTimeZone, startOfMonth, startOfYear, today, type CalendarDate } from '@internationalized/date'
-    import { Calendar as CalendarIcon, Radio } from 'lucide-svelte'
-    import { ExpenseCategoryIcons, getCategoryIcon } from './common'
-    import { isMobile } from './ui/responsive-modal/responsive'
-    import * as RadioGroup from '$lib/components/ui/radio-group'
-    import { TransactionType, type CategoryItem } from '$lib/db'
-    import { categories, store } from '$lib/db/store'
-    import { onMount } from 'svelte'
+    import { Button } from '$lib/components/ui/button';
+    import { Label } from '$lib/components/ui/label';
+    import * as Popover from '$lib/components/ui/popover';
+    import * as RadioGroup from '$lib/components/ui/radio-group';
+    import { RangeCalendar } from '$lib/components/ui/range-calendar';
+    import * as Sheet from '$lib/components/ui/sheet';
+    import { TransactionType } from '$lib/db';
+    import { categories, store } from '$lib/db/store';
+    import type { Filters } from '$lib/types';
+    import { cn } from '$lib/utils';
+    import { DateFormatter, endOfMonth, endOfYear, getLocalTimeZone, startOfMonth, startOfYear, today, type CalendarDate } from '@internationalized/date';
+    import { Calendar as CalendarIcon } from 'lucide-svelte';
+    import { onMount } from 'svelte';
+    import { getCategoryIcon } from './common';
+    import { isMobile } from './ui/responsive-modal/responsive';
 
     const dateFormatter = new DateFormatter('en-IN', { dateStyle: 'short' })
 

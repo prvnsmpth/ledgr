@@ -8,9 +8,8 @@
     import { getCategoryIcon, getCategoryColor, getCategoryEmoji } from '$lib/components/common'
     import { Check, Edit, Plus, Trash2, X } from 'lucide-svelte'
     import { onMount } from 'svelte'
-    import type { CategoryItem } from '$lib/db'
     import { toast } from 'svelte-sonner'
-
+    import type { ExpenseCategory } from '$lib/db';
     let isAddDialogOpen = false
     let isEditDialogOpen = false
     let isDeleteDialogOpen = false
@@ -27,9 +26,9 @@
     let editCategoryId: IDBValidKey | null = null
     let editCategoryName = ''
     let editCategoryValue = ''
-    let editCategoryIcon = ''
-    let editCategoryColor = ''
-    let editCategoryEmoji = ''
+    let editCategoryIcon: string | undefined = ''
+    let editCategoryColor: string | undefined = ''
+    let editCategoryEmoji: string | undefined = ''
     let editCategoryIsEnabled = true
     let editCategoryIsDefault = false
 
@@ -77,7 +76,7 @@
         isAddDialogOpen = true
     }
 
-    function handleEditClick(category: CategoryItem) {
+    function handleEditClick(category: ExpenseCategory) {
         editCategoryId = category.id || null
         editCategoryName = category.name
         editCategoryValue = category.value
@@ -86,10 +85,9 @@
         editCategoryEmoji = category.emoji
         editCategoryIsEnabled = category.isEnabled
         editCategoryIsDefault = category.isDefault
-        isEditDialogOpen = true
     }
 
-    function handleDeleteClick(category: CategoryItem) {
+    function handleDeleteClick(category: ExpenseCategory) {
         deleteCategoryId = category.id || null
         deleteCategoryName = category.name
         isDeleteDialogOpen = true
@@ -170,7 +168,7 @@
         }
     }
 
-    async function toggleCategoryStatus(category: CategoryItem) {
+    async function toggleCategoryStatus(category: ExpenseCategory) {
         try {
             await store.updateCategory(category.id!, {
                 isEnabled: !category.isEnabled

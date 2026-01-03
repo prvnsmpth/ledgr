@@ -1,12 +1,14 @@
 <script lang="ts">
     import { ArrowDown, ArrowUp } from 'lucide-svelte'
     import { cn, getDayOfWeek, getMonth, formatAmount } from '$lib/utils'
-    import { ExpenseCategory, type Transaction, TransactionType } from '$lib/db'
-    import { ExpenseCategoryIcons } from '$lib/components/common'
+    import { type Transaction, TransactionType } from '$lib/db'
+    import { getCategoryIcon } from '$lib/components/common'
     import * as Card from '$lib/components/ui/card'
     import * as Tooltip from '$lib/components/ui/tooltip'
 
     export let txn: Transaction
+
+    const icon = getCategoryIcon(txn.expenseCategory || 'untagged')
 </script>
 
 <a
@@ -22,9 +24,7 @@
             <button
                 class="p-2 flex justify-center items-center rounded-sm text-3xl border-solid text-muted-foreground"
             >
-                <svelte:component
-                    this={ExpenseCategoryIcons[txn.expenseCategory || ExpenseCategory.Untagged]}
-                />
+                <svelte:component this={icon} />
             </button>
             <div
                 class="text-xs md:text-sm flex flex-1 gap-1.5 items-center md:break-words font-semibold text-muted-foreground"
@@ -67,16 +67,12 @@
                             class="p-2 flex justify-center
                             items-center rounded-sm text-3xl border-solid text-muted-foreground"
                         >
-                            <svelte:component
-                                this={ExpenseCategoryIcons[
-                                    txn.expenseCategory || ExpenseCategory.Untagged
-                                ]}
-                                size={28}
+                            <svelte:component this={icon} size={28}
                             />
                         </div>
                     </Tooltip.Trigger>
                     <Tooltip.Content>
-                        <p>{txn.expenseCategory || ExpenseCategory.Untagged}</p>
+                        <p>{txn.expenseCategory || 'untagged'}</p>
                     </Tooltip.Content>
                 </Tooltip.Root>
                 <div

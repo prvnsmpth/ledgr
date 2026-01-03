@@ -1,26 +1,22 @@
-import type { Account, AggregatedCashFlow, GroupedCashFlow } from '.'
+import type { Account, AggregatedCashFlow, ExpenseCategory, GroupedCashFlow } from '.'
 import { parseStatement } from '../parser'
 import { MessageType, type Message } from '../types'
 import { getMonth } from '../utils'
 import {
     AccountType,
-    ExpenseCategory,
     SupportedBank,
     LedgrDB,
     TransactionType,
     type CashFlow,
     type CashFlowStats,
     type Transaction
-} from './index'
+} from '.'
+import { EXCLUDED_FROM_CASHFLOW_CATEGORIES } from './category-seed-data'
 
 const db = new LedgrDB()
 
-// Categories to exclude from cash flow calculations
-const excludedCategories = [
-    ExpenseCategory.Investment,
-    ExpenseCategory.SelfTransfer,
-    ExpenseCategory.CreditCardPayment
-]
+// Categories to exclude from cash flow calculations (from seed data)
+const excludedCategories: string[] = EXCLUDED_FROM_CASHFLOW_CATEGORIES
 
 function groupCashFlowByKey<K>(
     txns: Transaction[],
@@ -150,9 +146,9 @@ function computeCashFlowByMonth(txns: Transaction[]): GroupedCashFlow[] {
 function computeCashFlowByCategory(txns: Transaction[]): GroupedCashFlow[] {
     return computeCashFlowByKey(
         txns,
-        (txn: Transaction) => txn.expenseCategory || ExpenseCategory.Untagged,
-        (a: ExpenseCategory, b: ExpenseCategory) => a.localeCompare(b),
-        (a: ExpenseCategory) => a
+        (txn: Transaction) => txn.expenseCategory || 'untagged',
+        (a: string, b: string) => a.localeCompare(b),
+        (a: string) => a
     )
 }
 
@@ -163,8 +159,8 @@ function computeAggCashFlow(txns: Transaction[]): AggregatedCashFlow[] {
             const year = txn.date.getFullYear()
             const month = txn.date.getMonth()
             const monthTs = new Date(year, month, 1).getTime()
-            const category = txn.expenseCategory || ExpenseCategory.Untagged
-            return [monthTs, category] as [number, ExpenseCategory]
+            const category = txn.expenseCategory || 'untagged'
+            return [monthTs, category] as [number, string]
         },
         ([aTs, aCat], [bTs, bCat]) => {
             if (aTs !== bTs) {
@@ -172,7 +168,7 @@ function computeAggCashFlow(txns: Transaction[]): AggregatedCashFlow[] {
             }
             return aCat.localeCompare(bCat)
         },
-        ([ts, cat]: [number, ExpenseCategory]) => {
+        ([ts, cat]: [number, string]) => {
             const d = new Date(ts)
             const monthStr = `${getMonth(d)} ${d.getFullYear()}`
             return [monthStr, cat] as [string, string]
@@ -331,6 +327,17 @@ async function handleMessage(message: Message) {
         case MessageType.DeleteCategory: {
             const categoryId = message.payload
             await db.deleteCategory(categoryId)
+            self.postMessage({ id, type })
+            break
+        }
+        case MessageType.LoadCategories: {
+            const categories = message.payload as ExpenseCategory[]
+            console.log(`LoadCategories:`, categories.length)
+            // Clear existing categories and load new ones
+            await db.clearAllCategories()
+            for (const category of categories) {
+                await db.createExpenseCategory(category)
+            }
             self.postMessage({ id, type })
             break
         }

@@ -1,4 +1,4 @@
-import type { Account, Transaction } from "$lib/db"
+import type { Account, Transaction, ExpenseCategory } from "$lib/db"
 
 export type User = {
     id: string
@@ -20,6 +20,7 @@ export type LedgrData = {
     version: number
     accounts: Account[]
     transactions: Transaction[]
+    categories?: ExpenseCategory[]  // Optional for backward compatibility
 }
 
 export type BackupFile = {

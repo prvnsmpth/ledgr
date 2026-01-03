@@ -1,8 +1,7 @@
 <script lang="ts">
-    import { ExpenseCategoryIcons, getCategoryIcon } from '$lib/components/common'
+    import { getCategoryIcon } from '$lib/components/common'
     import { Input } from '$lib/components/ui/input'
     import * as Sheet from '$lib/components/ui/sheet'
-    import { ExpenseCategory, type CategoryItem } from '$lib/db'
     import { categories, store } from '$lib/db/store'
     import { cn } from '$lib/utils'
     import { CircleX, Search } from 'lucide-svelte'
@@ -50,11 +49,11 @@
     async function handleCategorySelect(category: string) {
         try {
             if (filters) {
-                await store.tagAllTransactions(filters, category as ExpenseCategory)
+                await store.tagAllTransactions(filters, category)
                 // @ts-ignore
                 window.plausible('TagAllSuccess')
             } else if (txnId) {
-                await store.tagSingleTransaction(txnId, category as ExpenseCategory)
+                await store.tagSingleTransaction(txnId, category)
                 // @ts-ignore
                 window.plausible('TagSingleSuccess')
             }

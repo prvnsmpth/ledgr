@@ -3,7 +3,7 @@
     import Loader from '$lib/components/loader.svelte'
     import { Button } from '$lib/components/ui/button'
     import * as Card from '$lib/components/ui/card'
-    import { ExpenseCategory, type CashFlow, type GroupedCashFlow } from '$lib/db'
+    import { type CashFlow, type GroupedCashFlow } from '$lib/db'
     import { storeInitialized, cashFlowStats } from '$lib/db/store'
     import { cn, formatAmount, getMonth } from '$lib/utils'
     import {
@@ -26,7 +26,7 @@
     let selectedMonthIdx: number = 0
     let selectedMonthCashFlow: GroupedCashFlow
     $: untaggedCashFlow = $cashFlowStats?.categoryCashFlow.filter(
-        (s) => s.groupKey === ExpenseCategory.Untagged
+        (s) => s.groupKey === 'untagged'
     )?.[0]
     const selInCashFlow = tweened(0, { duration: 800, easing: cubicOut })
     const selOutCashFlow = tweened(0, { duration: 800, easing: cubicOut })

@@ -1,19 +1,18 @@
-import { ExpenseCategory } from "$lib/db";
-
 export class ExpenseCategoryTagger {
 
-    private PATTERNS = {
-        [ExpenseCategory.Netflix]: /netflix/i,
-        [ExpenseCategory.Swiggy]: /swiggy/i,
-        [ExpenseCategory.Rent]: /rent/i,
+    // TODO: Make this configurable (potentially load patterns from database)
+    private PATTERNS: Record<string, RegExp> = {
+        'streaming_services': /netflix/i,
+        'food_delivery': /swiggy/i,
+        'rent': /rent/i,
     }
 
-    categorize(desc: string): ExpenseCategory {
+    categorize(desc: string): string {
         for (const [category, pattern] of Object.entries(this.PATTERNS)) {
             if (pattern.test(desc)) {
-                return category as ExpenseCategory
+                return category
             }
         }
-        return ExpenseCategory.Untagged
+        return 'untagged'
     }
 }

@@ -9,20 +9,20 @@
     import * as Select from '$lib/components/ui/select'
     import * as Modal from '$lib/components/ui/responsive-modal'
     import * as Tabs from '$lib/components/ui/tabs'
+    import { Combobox } from '$lib/components/ui/combobox'
 
-    import { BankIcons, ExpenseCategoryIcons } from '$lib/components/common'
+    import { BankIcons, getCategoryIcon } from '$lib/components/common'
     import CircleLoader from '$lib/components/loader-circle.svelte'
     import { Toaster } from '$lib/components/ui/sonner'
     import {
         AccountType,
         SupportedBank,
-        ExpenseCategory,
         StoreError,
         TransactionType,
         type Transaction,
         type TransactionKey
     } from '$lib/db'
-    import { accounts, store } from '$lib/db/store'
+    import { accounts, store, categories } from '$lib/db/store'
     import { ParseError, parseStatement } from '$lib/parser'
     import { cn, dateFormatter, TransactionUtils } from '$lib/utils'
     import { getLocalTimeZone, type DateValue } from '@internationalized/date'
@@ -95,7 +95,7 @@
     let descriptionEl: HTMLDivElement
     let txnType: TransactionType | undefined
     let txnTypeEl: HTMLDivElement
-    let expenseCategory: ExpenseCategory = ExpenseCategory.Untagged
+    let expenseCategory: string = 'untagged'
     let dateError: string | null = null
     let descriptionError: string | null = null
     let amountError: string | null = null
@@ -481,28 +481,28 @@
                         <Label class="text-xs text-muted-foreground uppercase font-bold">
                             Expense Category
                         </Label>
-                        <div class="flex flex-wrap gap-2">
-                            {#each Object.entries(ExpenseCategoryIcons) as [category, icon]}
+                        <div class="flex flex-wrap gap-2 max-h-72 overflow-y-auto">
+                            {#each $categories as category}
                                 <Button
                                     variant="secondary"
                                     size="sm"
                                     class={cn(
                                         'flex gap-1.5 text-muted-foreground font-bold text-xs focus-visible:ring-0',
-                                        expenseCategory === category
+                                        expenseCategory === category.value
                                             ? 'bg-gray-300 hover:bg-gray-300 text-primary'
                                             : ''
                                     )}
                                     on:click={() => {
-                                        if (expenseCategory === category) {
-                                            expenseCategory = ExpenseCategory.Untagged
+                                        if (expenseCategory === category.value) {
+                                            expenseCategory = 'untagged'
                                         } else {
                                             // @ts-ignore
                                             expenseCategory = category
                                         }
                                     }}
                                 >
-                                    <svelte:component this={icon} size={18} />
-                                    <span>{category.replaceAll("_", " ")}</span>
+                                    <!-- <svelte:component this={icon} size={18} /> -->
+                                    <span>{category.value.replaceAll("_", " ")}</span>
                                 </Button>
                             {/each}
                         </div>

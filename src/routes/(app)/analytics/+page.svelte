@@ -2,7 +2,6 @@
     import { Button } from '$lib/components/ui/button'
     import { cn } from '$lib/utils'
     import * as Card from '$lib/components/ui/card'
-    import { ExpenseCategory } from '$lib/db'
     import { cashFlowStats } from '$lib/db/store'
     import { fromMonthStr, toMonthStr } from '$lib/utils'
     import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
@@ -32,7 +31,7 @@
             .reduce((a, b) => a + b, 0) || 0
     $: numUntaggedTxns =
         $cashFlowStats?.categoryCashFlow?.filter(
-            (s) => s.groupKey === ExpenseCategory.Untagged
+            (s) => s.groupKey === 'untagged'
         )?.[0]?.cashFlow?.outgoingCount || 0
 
     let numMonths = 3
