@@ -25,14 +25,18 @@
         return new CalendarDate(dt.getFullYear(), dt.getMonth() + 1, 1)
     }
 
-    $: numTxns =
+    $: totalOutgoingValue =
         $cashFlowStats?.categoryCashFlow
-            ?.map((s) => s.cashFlow.outgoingCount)
+            ?.map((s) => s.cashFlow.outgoing)
             .reduce((a, b) => a + b, 0) || 0
-    $: numUntaggedTxns =
+    $: untaggedOutgoingValue =
         $cashFlowStats?.categoryCashFlow?.filter(
             (s) => s.groupKey === 'untagged'
-        )?.[0]?.cashFlow?.outgoingCount || 0
+        )?.[0]?.cashFlow?.outgoing || 0
+    $: untaggedPercentage =
+        totalOutgoingValue > 0
+            ? Math.round((untaggedOutgoingValue / totalOutgoingValue) * 100)
+            : 0
 
     let numMonths = 3
 
@@ -105,7 +109,7 @@
 
 <div class="font-bold text-3xl bg-gray-50 py-2 mt-10 md:mt-5">Analytics</div>
 
-{#if numTxns === 0}
+{#if totalOutgoingValue === 0}
     <Card.Root class="max-w-96">
         <Card.Header>
             <Card.Title class="flex gap-2 items-center">wow, such empty 👀</Card.Title>
@@ -119,14 +123,14 @@
         </Card.Content>
     </Card.Root>
 {:else}
-    {#if numUntaggedTxns > 0}
+    {#if untaggedOutgoingValue > 0}
         <div
             class="flex items-center gap-3 border border-yellow-300
             p-2 rounded-lg text-sm bg-yellow-100 text-yellow-600 w-fit"
         >
             <TriangleAlert size={24} class="shrink-0" />
             <div>
-                <b>{numUntaggedTxns}</b> out of <b>{numTxns}</b> expenses are currently untagged.
+                <b>{untaggedPercentage}%</b> of your expenses ({amtFmt.format(untaggedOutgoingValue)}) are untagged.
                 <a href="/transactions?tags=untagged&type=debit" class="text-yellow-800 underline">
                     Go forth and tag!
                 </a>
