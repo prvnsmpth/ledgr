@@ -16,7 +16,8 @@
         IndianRupee,
         Settings,
         SquarePlus,
-        Tags
+        Tags,
+        Wand2
     } from 'lucide-svelte'
     import { onDestroy } from 'svelte'
     import { quintInOut } from 'svelte/easing'
@@ -39,6 +40,12 @@
         '/categories': {
             name: 'Categories',
             icon: Tags,
+            isLink: true,
+            showOnDesktop: true
+        },
+        '/smart-tagging': {
+            name: 'Smart Tag',
+            icon: Wand2,
             isLink: true,
             showOnDesktop: true
         },

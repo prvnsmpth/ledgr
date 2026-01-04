@@ -23,7 +23,6 @@
         type TransactionKey
     } from '$lib/db'
     import { accounts, store, categories } from '$lib/db/store'
-    import { ParseError, parseStatement } from '$lib/parser'
     import { cn, dateFormatter, TransactionUtils } from '$lib/utils'
     import { getLocalTimeZone, type DateValue } from '@internationalized/date'
     import type { Selected } from 'bits-ui'
@@ -641,7 +640,7 @@
                             {fr.file.name.slice(0, 50)}{fr.file.name.length > 50 ? '...' : ''}
                         </div>
                         <div class="text-xs">
-                            {#if fr.error instanceof ParseError || fr.error instanceof StoreError}
+                            {#if fr.error?.message}
                                 <span>{fr.error.message}</span>
                             {:else}
                                 <span>Unknown error</span>

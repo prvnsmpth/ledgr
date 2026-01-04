@@ -15,6 +15,7 @@ import {
 } from '.'
 import { getMonth } from '$lib/utils'
 import type { LedgrData } from '$lib/server/types'
+import type { TransactionGroup } from '$lib/smart-grouping'
 
 export const accounts = writable<Account[]>([])
 export const cashFlowStats = writable<CashFlowStats | null>(null)
@@ -313,12 +314,12 @@ export class Store {
         })
     }
 
-    async tagAllTransactions(filters: Filters, expenseCategory: string) {
-        console.log('Tagging transactions', filters, expenseCategory)
+    async tagAllTransactions(filters: Filters, expenseCategory: string, transactionIds?: IDBValidKey[]) {
+        console.log('Tagging transactions', filters, expenseCategory, transactionIds)
         const txnIds = new Set(
             await this.dispatchToWorker({
                 type: MessageType.TagTransactions,
-                payload: { filters, expenseCategory }
+                payload: { filters, expenseCategory, transactionIds }
             })
         )
         await this.bumpVersion()
@@ -328,6 +329,13 @@ export class Store {
         this.dispatchToWorker({ type: MessageType.ComputeTransactionStats }).then((res) => {
             console.log('Transaction stats', res)
             cashFlowStats.set(res)
+        })
+    }
+
+    async getUntaggedGroups(limit?: number): Promise<TransactionGroup[]> {
+        return await this.dispatchToWorker({
+            type: MessageType.GetUntaggedGroups,
+            payload: { limit }
         })
     }
 

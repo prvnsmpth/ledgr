@@ -17,7 +17,7 @@ class ICICIBankStatementParser {
     }
 
     async parse(): Promise<Transaction[]> {
-        if (!isSupportedFile(this.file)) {
+        if (!await isSupportedFile(this.file)) {
             throw new ParseError("The file you uploaded is not a text/CSV/Excel file.", this.file);
         }
 
@@ -89,7 +89,7 @@ class ICICICreditCardStatementParser {
     }
 
     async parse(): Promise<Transaction[]> {
-        if (!isSupportedFile(this.file)) {
+        if (!await isSupportedFile(this.file)) {
             throw new ParseError("The file you uploaded is not a text/CSV/Excel file.", this.file);
         }
 

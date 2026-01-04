@@ -3,7 +3,7 @@
     import * as Card from '$lib/components/ui/card'
     import type { Filters } from '$lib/types'
     import { cn, debounce, formatAmount, type DateFilter } from '$lib/utils'
-    import { ArrowDown, ArrowUp, CircleX, ListFilter, Plus, Search } from 'lucide-svelte'
+    import { ArrowDown, ArrowUp, CircleX, ListFilter, Plus, Search, Wand2 } from 'lucide-svelte'
 
     import { page } from '$app/stores'
     import CreateAccount from '$lib/components/create-account.svelte'
@@ -130,12 +130,17 @@
 
 <div class="flex items-center font-bold text-3xl bg-gray-50 sticky top-0 z-50 py-2 mt-10 md:mt-5 w-full">
     <div class="flex-1">Transactions</div>
-    <button on:click={e => filterTxnsOpen = true} class="relative">
-        <ListFilter size={24} class="text-muted-foreground" />
-        {#if filtersActive}
-            <div class="absolute -top-0 -right-0 rounded-full bg-primary w-3.5 h-3.5 border-2 border-muted" />
-        {/if}
-    </button>
+    <div class="flex items-center gap-3">
+        <a href="/smart-tagging" class="text-muted-foreground hover:text-foreground transition-colors" title="Smart Tagging">
+            <Wand2 size={22} />
+        </a>
+        <button on:click={e => filterTxnsOpen = true} class="relative">
+            <ListFilter size={24} class="text-muted-foreground" />
+            {#if filtersActive}
+                <div class="absolute -top-0 -right-0 rounded-full bg-primary w-3.5 h-3.5 border-2 border-muted" />
+            {/if}
+        </button>
+    </div>
 </div>
 
 <div class="flex w-full">

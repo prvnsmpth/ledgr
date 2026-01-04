@@ -286,7 +286,8 @@ export class LedgrDB {
         return Promise.all(
             txns.map((txn) => {
                 return new Promise<IDBValidKey>((resolve, reject) => {
-                    const req = store.add(txn)
+                    // Use put() instead of add() to overwrite duplicates
+                    const req = store.put(txn)
                     req.onsuccess = () => resolve(req.result)
                     req.onerror = () => {
                         console.log('Error saving txn:', req.error, txn)
@@ -492,13 +493,39 @@ export class LedgrDB {
 
     async tagAllTransactions(
         filters: Filters,
-        expenseCategory: string
+        expenseCategory: string,
+        transactionIds?: IDBValidKey[]
     ): Promise<IDBValidKey[]> {
         const exists = await this.getExpenseCategoryById(expenseCategory)
         if (!exists) {
             throw new Error(`Expense category with id ${expenseCategory} not found`)
         }
 
+        // If transactionIds provided, tag those specific transactions
+        if (transactionIds && transactionIds.length > 0) {
+            const idSet = new Set(transactionIds.map(id => String(id)))
+            const store = await this.getStore(this.TXN_STORE)
+            const taggedIds: IDBValidKey[] = []
+
+            return new Promise((resolve, reject) => {
+                const req = store.openCursor()
+                req.onsuccess = (evt) => {
+                    const cursor = (evt.target as IDBRequest).result
+                    if (cursor) {
+                        if (idSet.has(String(cursor.value.id))) {
+                            cursor.update({ ...cursor.value, expenseCategory })
+                            taggedIds.push(cursor.value.id)
+                        }
+                        cursor.continue()
+                    } else {
+                        resolve(taggedIds)
+                    }
+                }
+                req.onerror = () => reject(req.error)
+            })
+        }
+
+        // Otherwise, tag by filters
         const store = await this.getStore(this.TXN_STORE)
         const index = store.index(this.TXN_DATE_INDEX)
         return new Promise((resolve, reject) => {
@@ -515,6 +542,20 @@ export class LedgrDB {
                 } else {
                     resolve(txnIds)
                 }
+            }
+            req.onerror = () => reject(req.error)
+        })
+    }
+
+    async getUntaggedTransactions(): Promise<Transaction[]> {
+        const store = await this.getStore(this.TXN_STORE)
+        return new Promise((resolve, reject) => {
+            const req = store.getAll()
+            req.onsuccess = () => {
+                const txns = req.result.filter(
+                    (t: Transaction) => !t.expenseCategory || t.expenseCategory === 'untagged'
+                )
+                resolve(txns)
             }
             req.onerror = () => reject(req.error)
         })
@@ -604,8 +645,10 @@ export class LedgrDB {
 
     async addCategory(category: Omit<ExpenseCategory, 'id'>): Promise<IDBValidKey> {
         const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
+        // Use the value as the id (matches how default categories work)
+        const categoryWithId = { ...category, id: category.value }
         return new Promise((resolve, reject) => {
-            const req = store.add(category)
+            const req = store.add(categoryWithId)
             req.onsuccess = () => resolve(req.result)
             req.onerror = () => reject(req.error)
         })
@@ -636,41 +679,74 @@ export class LedgrDB {
 
     /**
      * Seeds default categories if the category store is empty.
+     * Also updates existing default categories with missing fields (icon, color, parentId).
      * Called on app initialization to ensure default categories exist.
      */
     async seedDefaultCategoriesIfEmpty(): Promise<void> {
         const existingCategories = await this.getAllCategories()
-        if (existingCategories.length > 0) {
-            return
+
+        // Build a map of existing categories by value for quick lookup
+        const existingByValue = new Map<string, ExpenseCategory>()
+        for (const cat of existingCategories) {
+            existingByValue.set(cat.value, cat)
         }
 
-        console.log('Seeding default categories...')
+        // Build a seed map for quick lookup
+        const seedByValue = new Map<string, typeof ALL_DEFAULT_CATEGORY_SEEDS[0]>()
+        for (const seed of ALL_DEFAULT_CATEGORY_SEEDS) {
+            seedByValue.set(seed.value, seed)
+        }
+
         const store = await this.getStore(this.EXPENSE_CATEGORY_STORE)
 
         for (const seed of ALL_DEFAULT_CATEGORY_SEEDS) {
-            const category: ExpenseCategory = {
-                id: seed.value,
-                name: seed.name,
-                value: seed.value,
-                icon: seed.iconName,
-                color: seed.color,
-                emoji: seed.emoji,
-                isDefault: true,
-                isEnabled: true,
-                parentId: seed.parentValue
-            }
+            const existing = existingByValue.get(seed.value)
 
-            await new Promise<void>((resolve, reject) => {
-                const req = store.add(category)
-                req.onsuccess = () => resolve()
-                req.onerror = () => {
-                    console.error('Error adding category:', req.error)
-                    reject(req.error)
+            if (!existing) {
+                // Category doesn't exist, add it
+                const category: ExpenseCategory = {
+                    id: seed.value,
+                    name: seed.name,
+                    value: seed.value,
+                    icon: seed.iconName,
+                    color: seed.color,
+                    emoji: seed.emoji,
+                    isDefault: true,
+                    isEnabled: true,
+                    parentId: seed.parentValue
                 }
-            })
+
+                await new Promise<void>((resolve, reject) => {
+                    const req = store.add(category)
+                    req.onsuccess = () => resolve()
+                    req.onerror = () => {
+                        console.error('Error adding category:', req.error)
+                        reject(req.error)
+                    }
+                })
+            } else if (!existing.icon || existing.parentId === undefined) {
+                // Category exists but is missing icon or parentId, update it
+                // Note: parentId can be null (for super-categories), so we check for undefined
+                const updated: ExpenseCategory = {
+                    ...existing,
+                    icon: existing.icon || seed.iconName,
+                    color: existing.color || seed.color,
+                    emoji: existing.emoji || seed.emoji,
+                    parentId: existing.parentId !== undefined ? existing.parentId : seed.parentValue
+                }
+
+                await new Promise<void>((resolve, reject) => {
+                    const req = store.put(updated)
+                    req.onsuccess = () => resolve()
+                    req.onerror = () => {
+                        console.error('Error updating category:', req.error)
+                        reject(req.error)
+                    }
+                })
+            }
         }
 
-        console.log('Default categories seeded successfully')
+        console.log('Default categories seeded/updated successfully')
     }
 
     /**

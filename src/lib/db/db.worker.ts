@@ -2,6 +2,7 @@ import type { Account, AggregatedCashFlow, ExpenseCategory, GroupedCashFlow } fr
 import { parseStatement } from '../parser'
 import { MessageType, type Message } from '../types'
 import { getMonth } from '../utils'
+import { getUntaggedTransactionGroups } from '../smart-grouping'
 import {
     AccountType,
     SupportedBank,
@@ -219,8 +220,15 @@ async function handleMessage(message: Message) {
                 let txns: Transaction[]
                 try {
                     txns = await parseStatement(file, accountId, bank, accountType)
-                } catch (e) {
-                    fileResults.push({ file, numTransactions: 0, success: false, error: e })
+                } catch (e: any) {
+                    // Serialize error info for cross-worker boundary transport
+                    const errorInfo = {
+                        message: e?.message || String(e),
+                        name: e?.name || 'Error',
+                        isParseError: e?.constructor?.name === 'ParseError',
+                        isStoreError: e?.constructor?.name === 'StoreError'
+                    }
+                    fileResults.push({ file, numTransactions: 0, success: false, error: errorInfo })
                     continue
                 }
 
@@ -228,12 +236,18 @@ async function handleMessage(message: Message) {
                 try {
                     txnIds = await db.saveTransactions(txns)
                     fileResults.push({ file, numTransactions: txns.length, success: true })
-                } catch (e) {
+                } catch (e: any) {
+                    const errorInfo = {
+                        message: e?.message || String(e),
+                        name: e?.name || 'Error',
+                        isParseError: false,
+                        isStoreError: e?.constructor?.name === 'StoreError'
+                    }
                     fileResults.push({
                         file,
                         numTransactions: txns.length,
                         success: false,
-                        error: e
+                        error: errorInfo
                     })
                 }
             }
@@ -301,9 +315,16 @@ async function handleMessage(message: Message) {
             break
         }
         case MessageType.TagTransactions: {
-            const { filters, expenseCategory } = message.payload
-            const txnIds = await db.tagAllTransactions(filters, expenseCategory)
+            const { filters, expenseCategory, transactionIds } = message.payload
+            const txnIds = await db.tagAllTransactions(filters, expenseCategory, transactionIds)
             self.postMessage({ id, type, payload: txnIds })
+            break
+        }
+        case MessageType.GetUntaggedGroups: {
+            const { limit } = message.payload || {}
+            const allTxns = await db.getAllTransactions()
+            const groups = getUntaggedTransactionGroups(allTxns, limit)
+            self.postMessage({ id, type, payload: groups })
             break
         }
         // Category management

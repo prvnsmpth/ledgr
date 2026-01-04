@@ -12,6 +12,7 @@
     export let open: boolean
     export let filters: Filters | null = null
     export let txnId: IDBValidKey | null = null
+    export let transactionIds: IDBValidKey[] | null = null
     export let count: number = 1
     export let onCategorySelect: () => void
 
@@ -48,7 +49,13 @@
 
     async function handleCategorySelect(category: string) {
         try {
-            if (filters) {
+            if (transactionIds && transactionIds.length > 0) {
+                // Tag by specific transaction IDs (smart tagging)
+                const emptyFilters: Filters = { searchFilter: null, dateFilter: null, categoryFilter: [], typeFilter: null }
+                await store.tagAllTransactions(emptyFilters, category, transactionIds)
+                // @ts-ignore
+                window.plausible('SmartTagSuccess')
+            } else if (filters) {
                 await store.tagAllTransactions(filters, category)
                 // @ts-ignore
                 window.plausible('TagAllSuccess')

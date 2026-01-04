@@ -18,6 +18,7 @@ export enum MessageType {
     UpdateCategory = "updateCategory",
     DeleteCategory = "deleteCategory",
     LoadCategories = "loadCategories",
+    GetUntaggedGroups = "getUntaggedGroups",
 }
 
 export type Message = {

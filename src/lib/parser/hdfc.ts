@@ -168,7 +168,7 @@ class HdfcBankStatementParser {
     }
 
     async parse(): Promise<Transaction[]> {
-        if (!isSupportedFile(this.file)) {
+        if (!await isSupportedFile(this.file)) {
             throw new ParseError("The file you uploaded is not a text/CSV/Excel file.", this.file);
         }
 
@@ -184,8 +184,6 @@ class HdfcBankStatementParser {
 class HdfcCreditCardStatementParser {
     private file: File;
     private accountId: IDBValidKey
-
-    private readonly DELIMITER = "~"
     private tagger: ExpenseCategoryTagger
 
     constructor(file: File, accountId: IDBValidKey) {
@@ -195,12 +193,25 @@ class HdfcCreditCardStatementParser {
     }
 
     async parse(): Promise<Transaction[]> {
-        if (!isSupportedFile(this.file)) {
+        if (!await isSupportedFile(this.file)) {
             throw new ParseError("The file you uploaded is not a plain text/CSV/Excel file.", this.file);
         }
 
         const text = await this.file.text();
         const lines = text.split("\n");
+
+        // Auto-detect format based on delimiter
+        // New format (Sep 2025+): uses ~|~ delimiter
+        // Old format (pre-Sep 2025): uses ~ delimiter
+        const isNewFormat = text.includes('~|~');
+        const delimiter = isNewFormat ? '~|~' : '~';
+
+        // Column mappings differ between formats:
+        // Old format: [Type, Name, Date, Description, RewardPoints, Amount, Debit/Credit]
+        // New format: [Type, Name, Date, Description, Amount, Debit/Credit, Rewards]
+        const cols = isNewFormat
+            ? { date: 2, description: 3, amount: 4, debitCredit: 5 }
+            : { date: 2, description: 3, amount: 5, debitCredit: 6 };
 
         let headerFound = false;
 
@@ -211,7 +222,7 @@ class HdfcCreditCardStatementParser {
                 continue;
             }
 
-            const parts = line.split(this.DELIMITER)
+            const parts = line.split(delimiter)
             if (!headerFound && parts[0].toLowerCase() === "transaction type") {
                 headerFound = true;
                 continue;
@@ -223,11 +234,15 @@ class HdfcCreditCardStatementParser {
                 break;
             }
 
-            if (parts.length < 7) {
+            const minParts = isNewFormat ? 6 : 7;
+            if (parts.length < minParts) {
                 throw new ParseError("Failed to parse transaction from line." + line, this.file, line);
             }
 
-            let [, , dateStr, description, , amtStr, isCredit] = parts
+            let dateStr = parts[cols.date];
+            const description = parts[cols.description];
+            const amtStr = parts[cols.amount];
+            const isCredit = parts[cols.debitCredit] || '';
 
             // Parse date
             let timeStr
