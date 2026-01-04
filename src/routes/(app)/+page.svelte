@@ -37,6 +37,20 @@
         selOutCashFlow.set(Math.max(1, selectedCashFlowProportions.outgoing))
     }
 
+    // Yearly cash flow
+    $: yearlyCashFlow = $cashFlowStats?.yearlyCashFlow || []
+    $: numYears = yearlyCashFlow.length
+    let selectedYearIdx: number = 0
+    let selectedYearCashFlow: GroupedCashFlow
+    const selYearInCashFlow = tweened(0, { duration: 800, easing: cubicOut })
+    const selYearOutCashFlow = tweened(0, { duration: 800, easing: cubicOut })
+    $: if (yearlyCashFlow.length > 0) {
+        selectedYearCashFlow = yearlyCashFlow[selectedYearIdx]
+        let selectedCashFlowProportions = computeCashFlowProportions(selectedYearCashFlow.cashFlow)
+        selYearInCashFlow.set(Math.max(1, selectedCashFlowProportions.incoming))
+        selYearOutCashFlow.set(Math.max(1, selectedCashFlowProportions.outgoing))
+    }
+
     let importDialogOpen = false
 
     // Expense summary
@@ -328,6 +342,95 @@
                                 <div class="relative z-10 p-1 text-red-800 text-xl font-bold">
                                     <sup>₹</sup>
                                     {formatAmount(selectedMonthCashFlow.cashFlow.outgoing)}
+                                    <ArrowDown size={16} class="inline" strokeWidth={3} />
+                                </div>
+                            </div>
+                        </Card.Content>
+                    {/if}
+                </Card.Root>
+            </div>
+            <div class="flex flex-col gap-1.5">
+                <div class="text-muted-foreground uppercase text-xs font-bold">
+                    <ArrowUpDown size={18} class="inline" />
+                    Annual Cash Flow
+                </div>
+                <Card.Root>
+                    <Card.Header class="p-0">
+                        {#if selectedYearCashFlow}
+                            <Card.Title class="flex items-start border-b">
+                                <div class="flex-1 text-sm p-3">
+                                    {selectedYearCashFlow.groupKey}
+                                </div>
+                                <div class="flex gap-1.5 p-3">
+                                    <button
+                                        disabled={selectedYearIdx === numYears - 1}
+                                        on:click={(e) =>
+                                            (selectedYearIdx = Math.min(
+                                                numYears - 1,
+                                                selectedYearIdx + 1
+                                            ))}
+                                    >
+                                        <ChevronLeft
+                                            size={20}
+                                            strokeWidth={2.5}
+                                            class={cn(
+                                                selectedYearIdx === numYears - 1
+                                                    ? 'opacity-20'
+                                                    : 'opacity-100'
+                                            )}
+                                        />
+                                    </button>
+                                    <button
+                                        disabled={selectedYearIdx === 0}
+                                        on:click={(e) =>
+                                            (selectedYearIdx = Math.max(0, selectedYearIdx - 1))}
+                                    >
+                                        <ChevronRight
+                                            size={20}
+                                            strokeWidth={2.5}
+                                            class={cn(
+                                                selectedYearIdx === 0
+                                                    ? 'opacity-20'
+                                                    : 'opacity-100'
+                                            )}
+                                        />
+                                    </button>
+                                </div>
+                            </Card.Title>
+                        {/if}
+                    </Card.Header>
+                    {#if !selectedYearCashFlow}
+                        <Card.Content
+                            class="flex flex-col p-4 min-h-48 items-center justify-center"
+                        >
+                            <p class="text-sm text-muted-foreground p-8 text-center">
+                                ...and here you'll see the yearly inflow and outflow of money from
+                                all your accounts.
+                            </p>
+                        </Card.Content>
+                    {:else}
+                        <Card.Content class="flex flex-col gap-4 justify-evenly p-4">
+                            <div class="relative w-full">
+                                <div
+                                    style:width={`${$selYearInCashFlow}%`}
+                                    class={cn(
+                                        'absolute top-0 left-0 h-full bg-green-100 rounded-lg'
+                                    )}
+                                ></div>
+                                <div class="relative z-10 p-1 text-green-800 text-xl font-bold">
+                                    <sup>₹</sup>
+                                    {formatAmount(selectedYearCashFlow.cashFlow.incoming)}
+                                    <ArrowUp size={16} class="inline" strokeWidth={3} />
+                                </div>
+                            </div>
+                            <div class="relative w-full">
+                                <div
+                                    style:width={`${$selYearOutCashFlow}%`}
+                                    class={cn('absolute top-0 left-0 h-full bg-red-100 rounded-lg')}
+                                ></div>
+                                <div class="relative z-10 p-1 text-red-800 text-xl font-bold">
+                                    <sup>₹</sup>
+                                    {formatAmount(selectedYearCashFlow.cashFlow.outgoing)}
                                     <ArrowDown size={16} class="inline" strokeWidth={3} />
                                 </div>
                             </div>

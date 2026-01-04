@@ -134,7 +134,16 @@ export class Store {
             await this.loadDemoData()
         }
         accounts.set(await this.db.getAllAccounts())
-        cashFlowStats.set(await this.db.getCashFlowStats())
+
+        // Load cached stats, but recompute if missing yearlyCashFlow (added in later version)
+        const cachedStats = await this.db.getCashFlowStats()
+        if (cachedStats && !cachedStats.yearlyCashFlow) {
+            // Stats are outdated, recompute
+            const freshStats = await this.dispatchToWorker({ type: MessageType.ComputeTransactionStats })
+            cashFlowStats.set(freshStats)
+        } else {
+            cashFlowStats.set(cachedStats)
+        }
 
         const allCategories = await this.db.getAllCategories()
         categories.set(allCategories)

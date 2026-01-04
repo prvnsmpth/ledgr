@@ -57,6 +57,7 @@ export type CashFlow = {
 
 export type CashFlowStats = {
     monthlyCashFlow: GroupedCashFlow[]
+    yearlyCashFlow: GroupedCashFlow[]
     categoryCashFlow: GroupedCashFlow[],
     aggCashFlow: AggregatedCashFlow[]
 }

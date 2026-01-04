@@ -144,6 +144,15 @@ function computeCashFlowByMonth(txns: Transaction[]): GroupedCashFlow[] {
     )
 }
 
+function computeCashFlowByYear(txns: Transaction[]): GroupedCashFlow[] {
+    return computeCashFlowByKey(
+        txns,
+        (txn: Transaction) => txn.date.getFullYear(),
+        (a: number, b: number) => b - a,
+        (year: number) => String(year)
+    )
+}
+
 function computeCashFlowByCategory(txns: Transaction[]): GroupedCashFlow[] {
     return computeCashFlowByKey(
         txns,
@@ -180,6 +189,7 @@ function computeAggCashFlow(txns: Transaction[]): AggregatedCashFlow[] {
 function computeTransactionStats(txns: Transaction[]): CashFlowStats {
     return {
         monthlyCashFlow: computeCashFlowByMonth(txns),
+        yearlyCashFlow: computeCashFlowByYear(txns),
         categoryCashFlow: computeCashFlowByCategory(txns),
         aggCashFlow: computeAggCashFlow(txns)
     }
